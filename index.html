@@ -778,6 +778,11 @@
     .a11y-btn{ min-width:44px; }
   }
 
+  /* Teléfonos angostos (360 px): el tablero de la partida no se sale de la pantalla */
+  @media (max-width: 420px){
+    .practice-layout > *{ min-width:0; }
+    .board-shell{ max-width:100%; box-sizing:border-box; }
+  }
   /* Botones de categorías */
   main section[id], #categorias, #declaracion-accesibilidad{ scroll-margin-top:90px; }
   .categorias{ padding:40px 0 8px; }
@@ -800,7 +805,7 @@
   .volver-categorias:hover{ border-color:var(--teal-strong); }
   section h2[tabindex="-1"]:focus, #titulo-categorias:focus{ outline:3px solid var(--teal-strong); outline-offset:4px; }
 
-  /* Zoom de letra alto (hasta 350 %): la barra superior deja de ser fija y nada se desborda */
+  /* Zoom de letra alto (hasta 300 %): la barra superior deja de ser fija y nada se desborda */
   html[data-zoom-alto="si"] nav.topnav{ position:relative; top:auto; }
   html[data-zoom-alto="si"] .control-panel{ position:static !important; top:auto !important; }
   html[data-zoom-alto="si"] .practice-layout, html[data-zoom-alto="si"] .game-layout{ grid-template-columns:1fr !important; display:block; }
@@ -838,7 +843,10 @@
   html[data-zoom-alto="si"] .piece-select{ display:grid !important; grid-template-columns:repeat(auto-fit, minmax(min(100%, 9rem), 1fr)) !important; }
   html[data-zoom-alto="si"] .piece-select button{ min-width:0; }
   html[data-zoom-alto="si"] .board-shell, html[data-zoom-alto="si"] .board-frame{ max-width:100%; width:100%; min-width:0; box-sizing:border-box; }
-  html[data-zoom-alto="si"] .board-frame{ grid-template-columns:20px minmax(0,1fr) 20px; }
+  /* Con letra grande el tablero ocupa todo el ancho y las coordenadas se ajustan al tamaño de las casillas */
+  html[data-zoom-alto="si"] .board-frame{ grid-template-columns:min(7vw, 2rem) minmax(0,1fr) min(7vw, 2rem); grid-template-rows:min(7vw, 2rem) auto min(7vw, 2rem); }
+  html[data-zoom-alto="si"] .board-frame > :is(.ranks, .ranks-right, .files, .files-top){ font-size:min(4.2vw, 1.1rem) !important; line-height:1; }
+  html[data-zoom-alto="si"] .board-frame > .board, html[data-zoom-alto="si"] .board-frame > .cart-board-wrap{ width:100%; aspect-ratio:1; }
   html[data-zoom-alto="si"] .wrap > *, html[data-zoom-alto="si"] .practice-layout > *{ min-width:0; max-width:100%; }
   .a11y-btn:disabled{ opacity:.45; cursor:not-allowed; }
   /* El foco nunca queda tapado por la barra fija (WCAG 2.4.11) */
@@ -1450,7 +1458,7 @@
     <h2>♿ Declaración de accesibilidad digital (Sin Barreras Digitales, WCAG 2.1 AA y NTC 5854)</h2>
     <p>La plataforma educativa <strong>Jaque Matemático</strong> (desarrollada en el marco de la Práctica Profesional II de la Licenciatura en Matemáticas de la <strong>Universidad Popular del Cesar</strong> para la <strong>Institución Educativa Técnica José Eugenio Martínez</strong> de Valledupar) se compromete a garantizar la accesibilidad digital para estudiantes con ceguera, baja visión y diversidad funcional, en cumplimiento de las pautas <strong>WCAG 2.1 nivel AA</strong> (W3C), la norma <strong>NTC 5854</strong>, la <strong>Ley Estatutaria 1618 de 2013</strong>, la <strong>Resolución 1519 de 2020 de MinTIC</strong>, el <strong>Decreto 1421 de 2017</strong> y la <a href="https://sinbarrerasdigitales.saldarriagaconcha.org/" target="_blank" rel="noopener">Ruta de Accesibilidad Digital «Sin Barreras Digitales» de la Fundación Saldarriaga Concha (2025)</a>.</p>
     <ul>
-      <li><strong>Perceptible:</strong> Textos alternativos concisos (≤ 250 caracteres) en todas las fichas Staunton, minitableros, iconos de reglas, flechas vectoriales y piezas capturadas; relación de contraste superior a 4.5:1 en modo estándar y superior a 12:1 en el modo <em>◐ Alto contraste</em>; ampliación tipográfica de 90 % a 150 % (<em>A− / 100% / A+</em>); y marcas geométricas redundantes en cada casilla.</li>
+      <li><strong>Perceptible:</strong> Textos alternativos concisos (≤ 250 caracteres) en todas las fichas Staunton, minitableros, iconos de reglas, flechas vectoriales y piezas capturadas; relación de contraste superior a 4.5:1 en modo estándar y superior a 12:1 en el modo <em>◐ Alto contraste</em>; ampliación tipográfica de 90 % a 300 % (<em>A− / 100% / A+</em>), con el contenido reacomodado en una sola columna y sin desplazamiento horizontal; y marcas geométricas redundantes en cada casilla.</li>
       <li><strong>Operable:</strong> Navegación íntegra por teclado (<em>Tab</em>, <em>Flechas</em>, <em>Enter</em> y <em>Espacio</em>), enlaces para saltar directamente las 64 casillas de cada tablero, botón de deslizamiento rápido para gestos de 2 y 3 dedos en lectores móviles (TalkBack y VoiceOver) y partidas sin límite de tiempo.</li>
       <li><strong>Comprensible y Robusto:</strong> Lenguaje claro graduado por ciclos curriculares (6°–7°, 8°–9° y 10°–11°), audiodescripciones grabadas con voz neuronal (Jorge, es-MX) en todas las secciones, voz del navegador solo para narrar las jugadas libres de la partida completa, y botón «Silenciar voz de Jorge» (atajo Alt+M) que evita colisiones con lectores de pantalla nativos (NVDA, JAWS, TalkBack y VoiceOver); navegación por botones de categorías y por regiones con nombre, y registro estudiantil anonimizado conforme a la <strong>Ley Estatutaria 1581 de 2012</strong>.</li>
     </ul>
@@ -2090,7 +2098,7 @@
     /* ---------------- Barra de Accesibilidad (Contraste y Tamaño de Fuente) ---------------- */
   (function wireA11yToolbar(){
     var fontScale = 100;
-    var PASOS_LETRA = [90, 100, 110, 125, 150, 175, 200, 250, 300, 350];
+    var PASOS_LETRA = [90, 100, 110, 125, 150, 175, 200, 250, 300]; // 300 %: tope de la escala de texto en teléfonos
     function pasoLetra(dir){
       var i = 0; while(i < PASOS_LETRA.length - 1 && PASOS_LETRA[i] < fontScale) i++;
       if(PASOS_LETRA[i] !== fontScale && dir < 0) i++;
@@ -2100,7 +2108,7 @@
     var highContrast = false;
     try{
       var fsSaved = parseInt(localStorage.getItem("jaqueMatematicoFontScale"), 10);
-      if(!isNaN(fsSaved) && fsSaved >= 90 && fsSaved <= 350) fontScale = fsSaved;
+      if(!isNaN(fsSaved) && fsSaved >= 90 && fsSaved <= 300) fontScale = fsSaved;
       if(localStorage.getItem("jaqueMatematicoHighContrast") === "1") highContrast = true;
     }catch(e){}
 
@@ -2112,7 +2120,7 @@
     function applyFontScale(){
       document.documentElement.style.fontSize = fontScale + "%";
       // Con letra muy grande la barra superior deja de ser fija, para no tapar el contenido
-      if(fontScale > 150) document.documentElement.setAttribute("data-zoom-alto", "si");
+      if(fontScale > 150 || (fontScale > 100 && window.innerWidth < 700)) document.documentElement.setAttribute("data-zoom-alto", "si");
       else document.documentElement.removeAttribute("data-zoom-alto");
       if(resetBtn){ resetBtn.textContent = fontScale + "%"; resetBtn.setAttribute("aria-label", "Tamaño de letra al " + fontScale + " por ciento. Restablecer al 100 por ciento"); }
       if(decBtn) decBtn.disabled = fontScale <= PASOS_LETRA[0];
