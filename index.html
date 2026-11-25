@@ -2282,10 +2282,10 @@
 
     btn.addEventListener("click", function(e){
       var ahora = Date.now();
-      if(ahora - ultimoClick < 250){
-        window.detenerTodoNarraciones();
-        return;
-      }
+      // Los lectores de pantalla (Narrador, JAWS, TalkBack) a veces envían el mismo
+      // clic dos veces seguidas: ese duplicado se ignora y no apaga a Jorge.
+      if(ahora - ultimoClick < 900 && !(e && e.detail >= 2)){ return; }
+      if(e && e.detail >= 2){ window.detenerTodoNarraciones(); return; }
       ultimoClick = ahora;
 
       if(btn.getAttribute("aria-pressed") === "true" || (Voz.estaHablando() && btn.getAttribute("aria-pressed") === "true")){
@@ -2340,10 +2340,10 @@
 
     btn.addEventListener("click", function(e){
       var ahora = Date.now();
-      if(ahora - ultimoClick < 250){
-        window.detenerTodoNarraciones();
-        return;
-      }
+      // Los lectores de pantalla (Narrador, JAWS, TalkBack) a veces envían el mismo
+      // clic dos veces seguidas: ese duplicado se ignora y no apaga a Jorge.
+      if(ahora - ultimoClick < 900 && !(e && e.detail >= 2)){ return; }
+      if(e && e.detail >= 2){ window.detenerTodoNarraciones(); return; }
       ultimoClick = ahora;
 
       if(btn.getAttribute("aria-pressed") === "true" || (Voz.estaHablando() && btn.getAttribute("aria-pressed") === "true")){
@@ -2404,10 +2404,10 @@
 
     btn.addEventListener("click", function(e){
       var ahora = Date.now();
-      if(ahora - ultimoClick < 250){
-        window.detenerTodoNarraciones();
-        return;
-      }
+      // Los lectores de pantalla (Narrador, JAWS, TalkBack) a veces envían el mismo
+      // clic dos veces seguidas: ese duplicado se ignora y no apaga a Jorge.
+      if(ahora - ultimoClick < 900 && !(e && e.detail >= 2)){ return; }
+      if(e && e.detail >= 2){ window.detenerTodoNarraciones(); return; }
       ultimoClick = ahora;
 
       if(btn.getAttribute("aria-pressed") === "true" || (Voz.estaHablando() && btn.getAttribute("aria-pressed") === "true")){
@@ -3918,7 +3918,11 @@
     card.setAttribute("aria-pressed","false");
     var ruleKey = card.getAttribute("data-rule");
 
+    var ultimoToque = 0;
     function toggleORun(){
+      var ahora = Date.now();
+      if(ahora - ultimoToque < 900) return;  // clic duplicado del lector de pantalla
+      ultimoToque = ahora;
       var yaActiva = card.classList.contains("active");
       var estaHablando = Voz.estaHablando();
 
@@ -5081,7 +5085,11 @@
 /* «Escuchar esta sección» del plano, la práctica y el simulacro (voz de Jorge). */
 (function(){
   document.querySelectorAll(".listen-extra").forEach(function(b){
+    var ultimo = 0;
     b.addEventListener("click", function(){
+      var ahora = Date.now();
+      if(ahora - ultimo < 900) return;  // clic duplicado del lector de pantalla
+      ultimo = ahora;
       var sonando = b.getAttribute("aria-pressed") === "true";
       if(window.detenerTodoNarraciones) window.detenerTodoNarraciones(); else Voz.detener();
       if(sonando) return;
