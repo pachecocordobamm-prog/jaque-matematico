@@ -140,7 +140,7 @@
     background:var(--paper);
     color:var(--ink);
     font-family:var(--sans);
-    font-size:16px;
+    font-size:1rem;
     line-height:1.6;
   }
 
@@ -360,7 +360,7 @@
   .piece-card .name-en{font-family:var(--mono); font-size:0.75rem; color:var(--ink-soft);}
   .piece-card p{color:var(--ink-soft); font-size:0.95rem; margin-bottom:0.8em;}
   .mini-board{
-    display:grid; grid-template-columns:repeat(7,1fr); gap:0;
+    display:grid; grid-template-columns:repeat(8,1fr); gap:0;
     width:100%; aspect-ratio:1; border-radius:6px; overflow:hidden;
     border:1px solid var(--line); margin-top:10px;
   }
@@ -799,6 +799,50 @@
     border-radius:999px; cursor:pointer; }
   .volver-categorias:hover{ border-color:var(--teal-strong); }
   section h2[tabindex="-1"]:focus, #titulo-categorias:focus{ outline:3px solid var(--teal-strong); outline-offset:4px; }
+
+  /* Zoom de letra alto (hasta 350 %): la barra superior deja de ser fija y nada se desborda */
+  html[data-zoom-alto="si"] nav.topnav{ position:relative; top:auto; }
+  html[data-zoom-alto="si"] .control-panel{ position:static !important; top:auto !important; }
+  html[data-zoom-alto="si"] .practice-layout, html[data-zoom-alto="si"] .game-layout{ grid-template-columns:1fr !important; display:block; }
+  html[data-zoom-alto="si"] .board-shell{ margin:0 auto 16px; }
+  html[data-zoom-alto="si"] body{ overflow-wrap:break-word; }
+  html[data-zoom-alto="si"] h1{ font-size:1.35rem !important; line-height:1.15; }
+  html[data-zoom-alto="si"] h2{ font-size:1.2rem !important; line-height:1.2; }
+  html[data-zoom-alto="si"] h3{ font-size:1.05rem !important; }
+  html[data-zoom-alto="si"] :is(h1,h2,h3){ hyphens:auto; -webkit-hyphens:auto; overflow-wrap:anywhere; }
+  html[data-zoom-alto="si"] .eyebrow{ font-size:.8rem !important; }
+  html[data-zoom-alto="si"] .hero-board, html[data-zoom-alto="si"] img, html[data-zoom-alto="si"] table{ max-width:100% !important; }
+  html[data-zoom-alto="si"] .hero-board{ width:100% !important; height:auto !important; aspect-ratio:1; }
+  html[data-zoom-alto="si"] p *, html[data-zoom-alto="si"] li *, html[data-zoom-alto="si"] .concept *, html[data-zoom-alto="si"] .hero *{ white-space:normal !important; }
+  html[data-zoom-alto="si"] .hero, html[data-zoom-alto="si"] .hero > *{ grid-template-columns:1fr !important; min-width:0; }
+  html[data-zoom-alto="si"] summary, html[data-zoom-alto="si"] summary *{ flex-wrap:wrap !important; white-space:normal !important; min-width:0; }
+  html[data-zoom-alto="si"] .cycle-sum-right, html[data-zoom-alto="si"] .cycle-sum-pill{ max-width:100%; }
+  html[data-zoom-alto="si"] main :where(*){ min-width:0; }
+  html[data-zoom-alto="si"] main :where(button, span, div, p, a, label, em, strong, summary, details){ max-width:100%; box-sizing:border-box; }
+  html[data-zoom-alto="si"] .cycle-selector-bar, html[data-zoom-alto="si"] .cycle-selector-row{ display:block !important; padding-left:8px !important; padding-right:8px !important; }
+  html[data-zoom-alto="si"] main :where(div, nav, label, summary){ flex-wrap:wrap; }
+  html[data-zoom-alto="si"] .quiz-list{ display:block !important; }
+  html[data-zoom-alto="si"] .options{ display:block !important; }
+  html[data-zoom-alto="si"] .options > *{ width:auto !important; max-width:100% !important; box-sizing:border-box; }
+  html[data-zoom-alto="si"] .hero-inner{ grid-template-columns:minmax(0,1fr) !important; }
+  html[data-zoom-alto="si"] .hero-inner > *, html[data-zoom-alto="si"] .hero-ctas{ min-width:0; max-width:100%; flex-wrap:wrap; }
+  html[data-zoom-alto="si"] .skip-link{ max-width:calc(100vw - 16px); box-sizing:border-box; }
+  html[data-zoom-alto="si"] .hero-board{ display:none !important; } /* ilustración decorativa: con letra grande solo estorba */
+  html[data-zoom-alto="si"] .quiz-list > *, html[data-zoom-alto="si"] .cycle-accordion, html[data-zoom-alto="si"] .cycle-body,
+  html[data-zoom-alto="si"] .qcard, html[data-zoom-alto="si"] .cycle-body-footer, html[data-zoom-alto="si"] .cycle-body-footer *{
+    width:auto !important; max-width:100% !important; box-sizing:border-box; flex:1 1 100% !important; }
+  html[data-zoom-alto="si"] button, html[data-zoom-alto="si"] .btn{ white-space:normal; max-width:100%; height:auto; flex-wrap:wrap; hyphens:auto; -webkit-hyphens:auto; overflow-wrap:anywhere; }
+  html[data-zoom-alto="si"] button *, html[data-zoom-alto="si"] .btn *{ min-width:0; overflow-wrap:anywhere; }
+  html[data-zoom-alto="si"] .settings-toggle{ flex-wrap:wrap; max-width:100%; }
+  html[data-zoom-alto="si"] .settings-toggle button{ flex:1 1 100%; }
+  html[data-zoom-alto="si"] .piece-select{ display:grid !important; grid-template-columns:repeat(auto-fit, minmax(min(100%, 9rem), 1fr)) !important; }
+  html[data-zoom-alto="si"] .piece-select button{ min-width:0; }
+  html[data-zoom-alto="si"] .board-shell, html[data-zoom-alto="si"] .board-frame{ max-width:100%; width:100%; min-width:0; box-sizing:border-box; }
+  html[data-zoom-alto="si"] .board-frame{ grid-template-columns:20px minmax(0,1fr) 20px; }
+  html[data-zoom-alto="si"] .wrap > *, html[data-zoom-alto="si"] .practice-layout > *{ min-width:0; max-width:100%; }
+  .a11y-btn:disabled{ opacity:.45; cursor:not-allowed; }
+  /* El foco nunca queda tapado por la barra fija (WCAG 2.4.11) */
+  @media (min-width: 901px){ html:not([data-zoom-alto="si"]){ scroll-padding-top:130px; } }
 </style>
 </head>
 <body>
@@ -820,24 +864,10 @@
       <button type="button" class="a11y-btn" id="fontDecBtn" title="Reducir tamaño de letra" aria-label="Reducir tamaño de letra">A−</button>
       <button type="button" class="a11y-btn" id="fontResetBtn" title="Tamaño de letra normal" aria-label="Restablecer tamaño de letra">100%</button>
       <button type="button" class="a11y-btn" id="fontIncBtn" title="Ampliar tamaño de letra para baja visión" aria-label="Ampliar tamaño de letra para baja visión">A+</button>
-      <button type="button" class="a11y-btn" id="contrastToggleBtn" aria-pressed="false" title="Activar tema de alto contraste para baja visión">◐ Alto contraste</button>
+      <button type="button" class="a11y-btn" id="contrastToggleBtn" aria-pressed="false" title="Activar tema de alto contraste para baja visión"><span aria-hidden="true">◐</span> Alto contraste</button>
+      <button type="button" class="a11y-btn" id="vozJorgeBtn" aria-pressed="false" aria-describedby="vozJorgeAyuda">Silenciar voz de Jorge</button>
+      <span id="vozJorgeAyuda" class="sr-only">Úsalo si navegas con JAWS, NVDA, TalkBack o VoiceOver, para que la voz de la página no se cruce con tu lector. Atajo: Alt más M.</span>
     </div>
-    <details class="nav-dropdown" id="navDropdown">
-      <summary class="nav-toggle">
-        Apartados <span class="count">7</span>
-        <span class="chevron" aria-hidden="true">▾</span>
-      </summary>
-      <div class="nav-menu">
-        <a href="#movimientos"><span class="idx">01</span> Movimientos</a>
-        <a href="#reglas"><span class="idx">02</span> Cómo se gana</a>
-        <a href="#matematicas"><span class="idx">03</span> Matemáticas</a>
-        <a href="#plano"><span class="idx">04</span> Plano cartesiano</a>
-        <a href="#practica"><span class="idx">05</span> Práctica</a>
-        <a href="#simulacro"><span class="idx">06</span> Simulacro</a>
-        <a href="#partida"><span class="idx">07</span> Partida</a>
-        <a href="#declaracion-accesibilidad"><span class="idx">♿</span> Accesibilidad</a>
-      </div>
-    </details>
   </div>
 </nav>
 
@@ -1422,8 +1452,10 @@
     <ul>
       <li><strong>Perceptible:</strong> Textos alternativos concisos (≤ 250 caracteres) en todas las fichas Staunton, minitableros, iconos de reglas, flechas vectoriales y piezas capturadas; relación de contraste superior a 4.5:1 en modo estándar y superior a 12:1 en el modo <em>◐ Alto contraste</em>; ampliación tipográfica de 90 % a 150 % (<em>A− / 100% / A+</em>); y marcas geométricas redundantes en cada casilla.</li>
       <li><strong>Operable:</strong> Navegación íntegra por teclado (<em>Tab</em>, <em>Flechas</em>, <em>Enter</em> y <em>Espacio</em>), enlaces para saltar directamente las 64 casillas de cada tablero, botón de deslizamiento rápido para gestos de 2 y 3 dedos en lectores móviles (TalkBack y VoiceOver) y partidas sin límite de tiempo.</li>
-      <li><strong>Comprensible y Robusto:</strong> Lenguaje claro graduado por ciclos curriculares (6°–7°, 8°–9° y 10°–11°), síntesis de voz neuronal en español (Salomé Online, Gonzalo Online y Dalia Online) con conmutador de silenciamiento <em>Alt+M</em> que evita colisiones con lectores de pantalla nativos (NVDA, JAWS, TalkBack y VoiceOver), y registro estudiantil anonimizado conforme a la <strong>Ley Estatutaria 1581 de 2012</strong>.</li>
+      <li><strong>Comprensible y Robusto:</strong> Lenguaje claro graduado por ciclos curriculares (6°–7°, 8°–9° y 10°–11°), audiodescripciones grabadas con voz neuronal (Jorge, es-MX) en todas las secciones, voz del navegador solo para narrar las jugadas libres de la partida completa, y botón «Silenciar voz de Jorge» (atajo Alt+M) que evita colisiones con lectores de pantalla nativos (NVDA, JAWS, TalkBack y VoiceOver); navegación por botones de categorías y por regiones con nombre, y registro estudiantil anonimizado conforme a la <strong>Ley Estatutaria 1581 de 2012</strong>.</li>
     </ul>
+    <p><strong>Estado de conformidad:</strong> parcial, según la NTC 5854. La página cumple los criterios comprobables de WCAG 2.1 nivel AA revisados con herramientas y con recorridos de teclado y voz. Quedan pendientes dos validaciones humanas: la prueba con estudiantes ciegos que usan JAWS y TalkBack, y la locución humana de las audiodescripciones, que el INCI prefiere sobre la voz sintética (hoy se usa la voz neuronal Jorge).</p>
+    <p><a href="#categorias">Mapa del sitio: ir a las categorías</a></p>
     <p><strong>Contacto y reporte de barreras de accesibilidad:</strong> Si encuentras alguna barrera de acceso o deseas sugerir una mejora, comunícate con los docentes practicantes <strong>Martín Camilo Pacheco Córdoba</strong> y <strong>Luis David Delgado López</strong> o con el equipo de apoyo tiflológico en el área de Matemáticas de la I.E.T. José Eugenio Martínez (Valledupar, Cesar).</p>
   </div>
 </footer>
@@ -1522,7 +1554,7 @@
 
   window.FRAG_TEXTOS_JORGE = {"f_rey":"Rey","f_dama":"Dama","f_torre":"Torre","f_alfil":"Alfil","f_caballo":"Caballo","f_peon":"Peón","f_pieza":"Pieza","f_de":"de","f_a":"a","f_en":"en","f_y":"y","f_vector":"Vector:","f_dx":"delta equis","f_dy":"delta ye","f_mas":"más","f_menos":"menos","f_captura":"Captura","f_corona_a":"Corona a","f_jaque":"¡Jaque!","f_jaque_mate":"¡Jaque mate!","f_enroque_corto":"Enroque corto.","f_enroque_largo":"Enroque largo.","f_ganan_blancas":"Ganan las blancas.","f_ganan_negras":"Ganan las negras.","f_vacia":"vacía","f_seleccionada":"seleccionada","f_jugada_legal":"jugada legal","f_captura_posible":"captura posible","f_obtuviste":"Obtuviste","f_resp_correctas_en":"respuestas correctas en","f_ciclo1":"Ciclo uno, sexto grado y séptimo grado.","f_ciclo2":"Ciclo dos, octavo grado y noveno grado.","f_ciclo3":"Ciclo tres, décimo grado y undécimo grado.","f_ajedrez_tactica":"Ajedrez y táctica:","f_matematicas":"Matemáticas:","f_desplegadas_las":"Desplegadas las","f_preguntas_de":"preguntas de","f_ocultadas":"ocultadas.","f_cuestionario_de":"Cuestionario de","f_abierto":"abierto.","f_cerrado":"cerrado.","f_momento_pre":"Momento de evaluación: Pre-test (Diagnóstico)","f_momento_post":"Momento de evaluación: Post-test (Cierre)","f_partida_analizada":"Partida analizada.","f_precision_prom":"Precisión promedio:","f_por_ciento":"por ciento.","f_contraste_on":"Alto contraste activado.","f_contraste_off":"Alto contraste desactivado.","f_reglas_intro":"Las reglas del juego. Conoce los conceptos para jugar una partida completa, desde el jaque hasta el jaque mate, tablas y movimientos especiales.","f_no_pieza_tuya":"no hay una pieza tuya.","f_primero_elige":"Primero elige a qué pieza corona el peón.","n_0":"cero","n_1":"uno","n_2":"dos","n_3":"tres","n_4":"cuatro","n_5":"cinco","n_6":"seis","n_7":"siete","n_8":"ocho","n_9":"nueve","n_10":"diez","n_11":"once","n_12":"doce","n_13":"trece","n_14":"catorce","n_15":"quince","n_16":"dieciséis","n_17":"diecisiete","n_18":"dieciocho","n_19":"diecinueve","n_20":"veinte","n_21":"veintiuno","n_22":"veintidós","n_23":"veintitrés","n_24":"veinticuatro","n_25":"veinticinco","n_26":"veintiséis","n_27":"veintisiete","n_28":"veintiocho","n_29":"veintinueve","n_30":"treinta","n_40":"cuarenta","n_50":"cincuenta","n_60":"sesenta","n_70":"setenta","n_80":"ochenta","n_90":"noventa","n_100":"cien","p_pw":"peon blanco","p_pb":"peon negro","p_nw":"caballo blanco","p_nb":"caballo negro","p_bw":"alfil blanco","p_bb":"alfil negro","p_rw":"torre blanca","p_rb":"torre negra","p_qw":"dama blanca","p_qb":"dama negra","p_kw":"rey blanco","p_kb":"rey negro","promo_q":"corona a dama","promo_r":"corona a torre","promo_b":"corona a alfil","promo_n":"corona a caballo","game_turn_w":"turno de las blancas","game_turn_b":"turno de las negras","game_sel_cancel":"seleccion cancelada","game_check_w":"jaque al rey blanco","game_check_b":"jaque al rey negro","game_mate_w":"jaque mate ganan las blancas","game_mate_b":"jaque mate ganan las negras","game_stalemate":"tablas por ahogado","game_insufficient":"tablas por material insuficiente","game_castle_k_w":"enroque corto de las blancas","game_castle_k_b":"enroque corto de las negras","game_castle_q_w":"enroque largo de las blancas","game_castle_q_b":"enroque largo de las negras","pos_reset":"posicion reiniciada"};
   var Voz = window.Voz = (function(){
-    var PREFERENCIA = ["es-MX", "es-CO", "es-US", "es-419", "es-ES", "es"];
+    var PREFERENCIA = ["es-CO", "es-MX", "es-US", "es-419", "es-ES", "es"];
     var vozElegida = null, vozLista = false;
     var cola = [], hablando = false;
     var silenciadaGlobal = false;
@@ -2058,10 +2090,17 @@
     /* ---------------- Barra de Accesibilidad (Contraste y Tamaño de Fuente) ---------------- */
   (function wireA11yToolbar(){
     var fontScale = 100;
+    var PASOS_LETRA = [90, 100, 110, 125, 150, 175, 200, 250, 300, 350];
+    function pasoLetra(dir){
+      var i = 0; while(i < PASOS_LETRA.length - 1 && PASOS_LETRA[i] < fontScale) i++;
+      if(PASOS_LETRA[i] !== fontScale && dir < 0) i++;
+      i = Math.max(0, Math.min(PASOS_LETRA.length - 1, i + dir));
+      return PASOS_LETRA[i];
+    }
     var highContrast = false;
     try{
       var fsSaved = parseInt(localStorage.getItem("jaqueMatematicoFontScale"), 10);
-      if(!isNaN(fsSaved) && fsSaved >= 90 && fsSaved <= 150) fontScale = fsSaved;
+      if(!isNaN(fsSaved) && fsSaved >= 90 && fsSaved <= 350) fontScale = fsSaved;
       if(localStorage.getItem("jaqueMatematicoHighContrast") === "1") highContrast = true;
     }catch(e){}
 
@@ -2072,7 +2111,12 @@
 
     function applyFontScale(){
       document.documentElement.style.fontSize = fontScale + "%";
-      if(resetBtn) resetBtn.textContent = fontScale + "%";
+      // Con letra muy grande la barra superior deja de ser fija, para no tapar el contenido
+      if(fontScale > 150) document.documentElement.setAttribute("data-zoom-alto", "si");
+      else document.documentElement.removeAttribute("data-zoom-alto");
+      if(resetBtn){ resetBtn.textContent = fontScale + "%"; resetBtn.setAttribute("aria-label", "Tamaño de letra al " + fontScale + " por ciento. Restablecer al 100 por ciento"); }
+      if(decBtn) decBtn.disabled = fontScale <= PASOS_LETRA[0];
+      if(incBtn) incBtn.disabled = fontScale >= PASOS_LETRA[PASOS_LETRA.length-1];
       try{ localStorage.setItem("jaqueMatematicoFontScale", String(fontScale)); }catch(e){}
     }
     function applyContrast(){
@@ -2089,7 +2133,7 @@
     applyContrast();
 
     if(decBtn) decBtn.addEventListener("click", function(){
-      fontScale = Math.max(90, fontScale - 10);
+      fontScale = pasoLetra(-1);
       applyFontScale();
     });
     if(resetBtn) resetBtn.addEventListener("click", function(){
@@ -2097,7 +2141,7 @@
       applyFontScale();
     });
     if(incBtn) incBtn.addEventListener("click", function(){
-      fontScale = Math.min(150, fontScale + 10);
+      fontScale = pasoLetra(1);
       applyFontScale();
     });
     if(contrastBtn) contrastBtn.addEventListener("click", function(){
@@ -2184,16 +2228,17 @@
     var grid = document.getElementById("pieceGrid");
     var html = "";
     PIECES.forEach(function(p){
-      // use a 7x7 local grid centered on the piece for a clean illustrative view
-      var cf = 3, cr = 3; // center of mini board
+      // Tablero real de 8 x 8 (columnas a-h, filas 1-8). Todas las piezas en d4;
+      // el peón en e2 para mostrar su avance doble inicial.
+      var cf = p.key==="pawn" ? 4 : 3, cr = p.key==="pawn" ? 1 : 3;
       var res = movesFor(p.key, cf, cr, "white");
       var cellClass = {};
       res.moves.forEach(function(m){ cellClass[m[0]+","+m[1]] = "move"; });
       res.captures.forEach(function(m){ cellClass[m[0]+","+m[1]] = "cap"; });
 
       var mini = "";
-      for(var r=6;r>=0;r--){
-        for(var f=0; f<7; f++){
+      for(var r=7;r>=0;r--){
+        for(var f=0; f<8; f++){
           var dark = (f+r)%2===0;
           var cls = "msq " + (dark?"d":"l");
           if(f===cf && r===cr) cls += " origin";
@@ -4993,6 +5038,8 @@
    NVDA, TalkBack y VoiceOver leen dónde quedó el estudiante) y Jorge anuncia
    la categoría. «Volver a las categorías» regresa a la lista. */
 (function(){
+  var INTRO_SECCION = { movimientos:"pieces_intro", reglas:"f_reglas_intro", matematicas:"math_intro", plano:"ad_plano",
+                        practica:"ad_practica", simulacro:"ad_simulacro", partida:"skip_to_play_msg" };
   function irA(id, audio){
     var sec = document.getElementById(id);
     if(!sec) return;
@@ -5001,7 +5048,16 @@
     var dd = document.getElementById("navDropdown"); if(dd) dd.open = false;
     sec.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
     destino.focus({preventScroll: true});
-    if(window.Voz && audio){ if(window.detenerTodoNarraciones) window.detenerTodoNarraciones(); Voz.decir(null, {audioKey: audio, interrumpir: true}); }
+    if(window.Voz && audio){
+      if(window.detenerTodoNarraciones) window.detenerTodoNarraciones();
+      var intro = INTRO_SECCION[id];
+      // Pausa breve: si hay un lector de pantalla, primero dice el título enfocado y luego habla Jorge
+      clearTimeout(irA.t);
+      irA.t = setTimeout(function(){
+        Voz.decir(null, {audioKey: audio, interrumpir: true});
+        if(intro) Voz.encolar(null, {audioKey: intro});
+      }, 900);
+    }
   }
   document.querySelectorAll(".cat-btn").forEach(function(b){
     b.addEventListener("click", function(){ irA(b.getAttribute("data-cat"), b.getAttribute("data-audio")); });
@@ -5041,12 +5097,12 @@
 /* Texto alternativo de los diagramas de movimiento de cada pieza. */
 (function(){
   var ALT = {
-    king:   "Diagrama de 7 por 7 casillas: el rey en el centro y marcadas las 8 casillas que lo rodean, una en cada dirección.",
-    queen:  "Diagrama de 7 por 7 casillas: la dama en el centro y marcadas todas las casillas de su columna, de su fila y de sus dos diagonales, hasta el borde.",
-    rook:   "Diagrama de 7 por 7 casillas: la torre en el centro y marcadas todas las casillas de su columna y de su fila, hasta el borde.",
-    bishop: "Diagrama de 7 por 7 casillas: el alfil en el centro y marcadas las casillas de sus dos diagonales, hasta las cuatro esquinas.",
-    knight: "Diagrama de 7 por 7 casillas: el caballo en el centro y marcadas las 8 casillas a las que salta en forma de L, dos pasos en una dirección y uno hacia el lado.",
-    pawn:   "Diagrama de 7 por 7 casillas: el peón en el centro, marcada la casilla de adelante a la que avanza y, en las dos diagonales de adelante, las casillas donde captura."
+    king:   "Diagrama de un tablero de 8 por 8: el rey en d4 y marcadas las 8 casillas que lo rodean: c3, c4, c5, d3, d5, e3, e4 y e5.",
+    queen:  "Diagrama de un tablero de 8 por 8: la dama en d4 y marcadas las 27 casillas de su columna, de su fila y de sus dos diagonales, hasta el borde.",
+    rook:   "Diagrama de un tablero de 8 por 8: la torre en d4 y marcadas las 14 casillas de la columna d y de la fila 4.",
+    bishop: "Diagrama de un tablero de 8 por 8: el alfil en d4 y marcadas las 13 casillas de sus dos diagonales, todas del mismo color que d4.",
+    knight: "Diagrama de un tablero de 8 por 8: el caballo en d4 y marcadas las 8 casillas a las que salta en forma de L: b3, b5, c2, c6, e2, e6, f3 y f5.",
+    pawn:   "Diagrama de un tablero de 8 por 8: el peón blanco en e2, marcadas e3 y e4 a las que puede avanzar en su primer movimiento, y d3 y f3, donde captura en diagonal."
   };
   function poner(){
     document.querySelectorAll(".piece-card[data-piece-key]").forEach(function(c){
@@ -5064,6 +5120,108 @@
     if(muts.some(function(m){ return m.target.classList && m.target.classList.contains("mini-board") && m.attributeName === "aria-hidden"; })) return;
     poner();
   }).observe(cont, {childList:true, subtree:true});
+})();
+</script>
+
+<script>
+/* Símbolos decorativos dentro de botones y enlaces (♿ ↓ ↑ ♟ ⏭): se ocultan al
+   lector de pantalla para que no los lea en voz alta. */
+(function(){
+  var SIM = /([←-⇿⌀-⏿■-➿⬀-⯿♚-♟♔-♙]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDEFF])️?/g;
+  function limpiar(){
+    document.querySelectorAll("button, a[href], footer h2, footer h3, .cat-btn").forEach(function(el){
+      if(el.hasAttribute("aria-label")) return;
+      Array.prototype.slice.call(el.childNodes).forEach(function(n){
+        if(n.nodeType !== 3 || !SIM.test(n.nodeValue)) return;
+        SIM.lastIndex = 0;
+        var frag = document.createDocumentFragment(), ult = 0, m;
+        while((m = SIM.exec(n.nodeValue))){
+          frag.appendChild(document.createTextNode(n.nodeValue.slice(ult, m.index)));
+          var sp = document.createElement("span"); sp.setAttribute("aria-hidden", "true"); sp.textContent = m[0];
+          frag.appendChild(sp); ult = m.index + m[0].length;
+        }
+        frag.appendChild(document.createTextNode(n.nodeValue.slice(ult)));
+        n.parentNode.replaceChild(frag, n);
+      });
+    });
+  }
+  limpiar(); setTimeout(limpiar, 1500);
+})();
+
+/* «Silenciar voz de Jorge» (modo lector de pantalla) y atajo Alt+M. */
+(function(){
+  var b = document.getElementById("vozJorgeBtn");
+  var vivo = document.getElementById("srPoliteLive");
+  function pintar(){
+    var sil = Voz.estaSilenciada();
+    b.setAttribute("aria-pressed", sil ? "true" : "false");
+    b.textContent = sil ? "Activar voz de Jorge" : "Silenciar voz de Jorge";
+  }
+  function alternar(){
+    var sil = Voz.alternarSilencio();
+    pintar();
+    if(window.sincronizarRegionesVivas) window.sincronizarRegionesVivas();
+    if(vivo){ vivo.textContent = ""; setTimeout(function(){ vivo.textContent = sil ? "Voz de Jorge silenciada. Tu lector de pantalla queda solo." : "Voz de Jorge activada."; }, 60); }
+    if(!sil) Voz.decir(null, {audioKey: "audio_on", interrumpir: true});
+  }
+  if(b){ pintar(); b.addEventListener("click", alternar); }
+  document.addEventListener("keydown", function(e){
+    if(e.altKey && !e.ctrlKey && !e.metaKey && (e.key === "m" || e.key === "M")){ e.preventDefault(); alternar(); }
+  });
+})();
+</script>
+
+<script>
+/* Mientras la voz de Jorge está activa, las zonas de estado no le envían avisos al
+   lector de pantalla (TalkBack, JAWS): Jorge ya dice esa información y así no se
+   cruzan dos voces. Si se silencia a Jorge, los avisos vuelven al lector. */
+(function(){
+  var IDS = ["ruleStatus", "quizResult", "gameStatus", "vozAviso"];
+  window.sincronizarRegionesVivas = function(){
+    var jorge = !(window.Voz && Voz.estaSilenciada());
+    IDS.forEach(function(id){
+      var el = document.getElementById(id); if(!el) return;
+      el.setAttribute("aria-live", jorge ? "off" : "polite");
+      if(jorge) el.removeAttribute("role"); else el.setAttribute("role", "status");
+    });
+  };
+  window.sincronizarRegionesVivas();
+})();
+
+/* Δx y Δy: en pantalla se ven con el símbolo; el lector de pantalla oye «delta equis» y «delta ye». */
+(function(){
+  var RE = /Δ\s?([xy])/g;
+  function hablado(l){ return l === "x" ? "delta equis" : "delta ye"; }
+  function procesar(raiz){
+    var w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, {acceptNode: function(n){
+      if(!RE.test(n.nodeValue)){ RE.lastIndex = 0; return NodeFilter.FILTER_REJECT; }
+      RE.lastIndex = 0;
+      var p = n.parentElement;
+      if(!p || p.closest("script,style,svg,[aria-hidden='true'],.sr-only,.delta-sr")) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }});
+    var lista = []; while(w.nextNode()) lista.push(w.currentNode);
+    lista.forEach(function(n){
+      var t = n.nodeValue, frag = document.createDocumentFragment(), ult = 0, m;
+      RE.lastIndex = 0;
+      while((m = RE.exec(t))){
+        frag.appendChild(document.createTextNode(t.slice(ult, m.index)));
+        var caja = document.createElement("span"); caja.className = "delta-sr";
+        var vis = document.createElement("span"); vis.setAttribute("aria-hidden", "true"); vis.textContent = m[0];
+        var sr = document.createElement("span"); sr.className = "sr-only"; sr.textContent = hablado(m[1]);
+        caja.appendChild(vis); caja.appendChild(sr); frag.appendChild(caja);
+        ult = m.index + m[0].length;
+      }
+      frag.appendChild(document.createTextNode(t.slice(ult)));
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+  procesar(document.body);
+  var pend = false;
+  new MutationObserver(function(){
+    if(pend) return; pend = true;
+    setTimeout(function(){ pend = false; procesar(document.body); }, 120);
+  }).observe(document.body, {childList:true, subtree:true, characterData:true});
 })();
 </script>
 </body>
