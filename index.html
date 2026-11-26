@@ -6,6 +6,10 @@
 <title>Jaque Matemático</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♞</text></svg>">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script>
+  // Tema guardado (claro u oscuro). Sin elección, se sigue el del sistema.
+  try{ var t = localStorage.getItem("jaqueMatematicoTema"); if(t==="light"||t==="dark") document.documentElement.setAttribute("data-theme", t); }catch(e){}
+</script>
 <style>
   :root{
     --paper: #f2ead9;
@@ -15,6 +19,8 @@
     --line: rgba(33,26,18,0.14);
     --board-dark: #4a3323;
     --board-dark-2: #6b4a30;
+    --board-light: #f2ead9;
+    --board-light-2: #fbf6ea;
     --gold: #93672a;
     --gold-strong: #7a5220;
     --teal: #1f6f6b;
@@ -37,8 +43,10 @@
       --ink: #ece3d3;
       --ink-soft: #b9ac96;
       --line: rgba(236,227,211,0.14);
-      --board-dark: #2c1f16;
-      --board-dark-2: #4a3323;
+      --board-dark: #5a3e2a;
+      --board-dark-2: #6b4a30;
+      --board-light: #b8a07c;
+      --board-light-2: #c4ad8a;
       --gold: #c99a4e;
       --gold-strong: #e0b46c;
       --teal: #4fb3ad;
@@ -54,8 +62,10 @@
     --ink: #ece3d3;
     --ink-soft: #b9ac96;
     --line: rgba(236,227,211,0.14);
-    --board-dark: #2c1f16;
-    --board-dark-2: #4a3323;
+    --board-dark: #5a3e2a;
+    --board-dark-2: #6b4a30;
+    --board-light: #b8a07c;
+    --board-light-2: #c4ad8a;
     --gold: #c99a4e;
     --gold-strong: #e0b46c;
     --teal: #4fb3ad;
@@ -349,7 +359,7 @@
   @keyframes heroPieza{ from{opacity:0; transform:translateY(-14%);} to{opacity:1; transform:none;} }
   @media (prefers-reduced-motion: reduce){ .hero-board .hero-piece{animation:none;} }
   .hero-board .sq.d{background:var(--board-dark);}
-  .hero-board .sq.l{background:var(--paper-raised);}
+  .hero-board .sq.l{background:var(--board-light-2);}
 
   /* ---------- Sections ---------- */
   main section{padding:64px 0; border-bottom:1px solid var(--line);}
@@ -378,7 +388,7 @@
   }
   .mini-board .msq{position:relative; display:flex; align-items:center; justify-content:center;}
   .mini-board .msq.d{background:var(--board-dark);}
-  .mini-board .msq.l{background:var(--paper);}
+  .mini-board .msq.l{background:var(--board-light);}
   /* Patrones geométricos redundantes (WCAG 1.4.1 Uso del color y 1.4.11 Contraste no textual):
      - Origen: círculo sólido con anillo doble
      - Destino libre (move): circunferencia hueca con borde grueso
@@ -478,7 +488,7 @@
   }
   .move-input-controls input:focus-visible{outline:2px solid var(--teal-strong); outline-offset:2px;}
   .sqb.d{background:var(--board-dark);}
-  .sqb.l{background:var(--paper);}
+  .sqb.l{background:var(--board-light);}
   .sqb .piece-glyph{
     display:inline-flex; align-items:center; justify-content:center;
     width:84%; height:84%; pointer-events:none; user-select:none;
@@ -896,6 +906,7 @@
       <button type="button" class="a11y-btn" id="fontDecBtn" title="Reducir tamaño de letra" aria-label="Reducir tamaño de letra">A−</button>
       <button type="button" class="a11y-btn" id="fontResetBtn" title="Tamaño de letra normal" aria-label="Restablecer tamaño de letra">100%</button>
       <button type="button" class="a11y-btn" id="fontIncBtn" title="Ampliar tamaño de letra para baja visión" aria-label="Ampliar tamaño de letra para baja visión">A+</button>
+      <button type="button" class="a11y-btn" id="themeToggleBtn" aria-pressed="false" title="Cambiar entre modo claro y modo oscuro"><span aria-hidden="true">☾</span> Modo oscuro</button>
       <button type="button" class="a11y-btn" id="contrastToggleBtn" aria-pressed="false" title="Activar tema de alto contraste para baja visión"><span aria-hidden="true">◐</span> Alto contraste</button>
     </div>
   </div>
@@ -2188,6 +2199,30 @@
       fontScale = pasoLetra(1);
       applyFontScale();
     });
+    // Modo claro / oscuro. Sin elección guardada, se sigue el sistema.
+    var themeBtn = document.getElementById("themeToggleBtn");
+    var mqOscuro = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    function temaActual(){
+      var t = document.documentElement.getAttribute("data-theme");
+      if(t === "light" || t === "dark") return t;
+      return (mqOscuro && mqOscuro.matches) ? "dark" : "light";
+    }
+    function reflejarTema(){
+      if(!themeBtn) return;
+      var oscuro = temaActual() === "dark";
+      themeBtn.setAttribute("aria-pressed", oscuro ? "true" : "false");
+      themeBtn.innerHTML = oscuro ? '<span aria-hidden="true">☾</span> Modo oscuro: activo' : '<span aria-hidden="true">☾</span> Modo oscuro';
+    }
+    reflejarTema();
+    if(mqOscuro && mqOscuro.addEventListener) mqOscuro.addEventListener("change", reflejarTema);
+    if(themeBtn) themeBtn.addEventListener("click", function(){
+      var nuevo = temaActual() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", nuevo);
+      try{ localStorage.setItem("jaqueMatematicoTema", nuevo); }catch(e){}
+      reflejarTema();
+      Voz.decir(nuevo === "dark" ? "Modo oscuro activado." : "Modo claro activado.", {interrumpir:true});
+    });
+
     if(contrastBtn) contrastBtn.addEventListener("click", function(){
       highContrast = !highContrast;
       applyContrast();
