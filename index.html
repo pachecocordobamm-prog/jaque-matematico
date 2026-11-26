@@ -332,7 +332,7 @@
   }
 
   .listen-btn{ margin-bottom:6px; }
-  .listen-btn[aria-pressed="true"]{ border-color:var(--teal-strong); background:var(--teal); color:var(--paper-raised); }
+  .listen-btn[aria-pressed="true"], .listen-btn[data-sonando="true"]{ border-color:var(--teal-strong); background:var(--teal); color:var(--paper-raised); }
   .listen-icon{ font-size:0.95rem; }
   .voice-disclaimer{
     font-family:var(--mono); font-size:0.72rem; color:var(--ink-soft);
@@ -990,7 +990,7 @@
       <p>Cada pieza tiene su propia geometría de movimiento. Para garantizar accesibilidad visual (baja visión y daltonismo), las casillas combinan color y forma geométrica: el <strong>círculo sólido dorado con doble anillo</strong> marca dónde está la pieza; las <strong>circunferencias huecas verdes</strong> indican a dónde puede desplazarse; y los <strong>marcos rojos con el signo ×</strong> señalan dónde puede capturar.</p>
     </div>
 
-    <button type="button" class="btn listen-btn" id="listenPiecesBtn" aria-pressed="false">
+    <button type="button" class="btn listen-btn" id="listenPiecesBtn" data-sonando="false" aria-label="Escuchar esta sección: Cómo se mueven las piezas">
       <span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección
     </button>
 
@@ -1009,7 +1009,7 @@
       <p class="practice-note">Las tarjetas y el tablero de ejemplo también se manejan con teclado: entra con Tab a una tarjeta y presiona Enter o espacio para cargar su ejemplo; dentro del tablero, muévete con las flechas y presiona Enter o espacio para elegir una pieza o mover. Cada tarjeta y cada casilla se anuncian por voz.</p>
     </div>
 
-    <button type="button" class="btn listen-btn" id="listenRulesBtn" data-target="reglas" aria-pressed="false">
+    <button type="button" class="btn listen-btn" id="listenRulesBtn" data-target="reglas" data-sonando="false" aria-label="Escuchar esta sección: Las reglas del juego">
       <span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección
     </button>
 
@@ -1141,7 +1141,7 @@
       <p>El ajedrez se fundamenta directamente en las matemáticas: cada acción en el tablero, como nombrar una casilla, verificar la seguridad del rey o desplazar una pieza, constituye la ubicación de puntos en un plano cartesiano y la descripción vectorial de sus traslaciones.</p>
     </div>
 
-    <button type="button" class="btn listen-btn" id="listenMathBtn" data-target="matematicas" aria-pressed="false">
+    <button type="button" class="btn listen-btn" id="listenMathBtn" data-target="matematicas" data-sonando="false" aria-label="Escuchar esta sección: Las matemáticas del tablero">
       <span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección
     </button>
 
@@ -1211,7 +1211,7 @@
       <p class="practice-note">También puedes usar este tablero con el teclado: entra con Tab, recorre las casillas con las flechas y presiona Enter o espacio para mover la pieza a una casilla resaltada. Cada casilla se anuncia por voz al recorrerla, junto con el vector de cada movimiento.</p>
     </div>
 
-    <button type="button" class="btn listen-btn listen-extra" data-audio="ad_plano" aria-pressed="false">
+    <button type="button" class="btn listen-btn listen-extra" data-audio="ad_plano" data-sonando="false" aria-label="Escuchar esta sección: Plano cartesiano">
       <span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección
     </button>
 
@@ -1273,7 +1273,7 @@
       <p class="practice-note">También puedes usar este tablero con el teclado: entra con Tab, recorre las casillas con las flechas y presiona Enter o espacio para mover la pieza a una casilla resaltada. Cada casilla se anuncia por voz al recorrerla.</p>
     </div>
 
-    <button type="button" class="btn listen-btn listen-extra" data-audio="ad_practica" aria-pressed="false">
+    <button type="button" class="btn listen-btn listen-extra" data-audio="ad_practica" data-sonando="false" aria-label="Escuchar esta sección: Practica los movimientos">
       <span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección
     </button>
 
@@ -1322,7 +1322,7 @@
       <p>Banco graduado de <strong>48 preguntas exclusivas</strong> (<strong>16 preguntas por cada ciclo escolar</strong>: 8 de reglamento y táctica de ajedrez + 8 de matemáticas del tablero con complejidad creciente según el ciclo). Las preguntas están <strong>plegadas por ciclo</strong> para que no aparezcan de golpe: pulsa tu ciclo abajo o en los paneles desplegables para abrir únicamente las preguntas que te corresponden.</p>
     </div>
 
-    <button type="button" class="btn listen-btn listen-extra" data-audio="ad_simulacro" aria-pressed="false">
+    <button type="button" class="btn listen-btn listen-extra" data-audio="ad_simulacro" data-sonando="false" aria-label="Escuchar esta sección: Simulacro por ciclos">
       <span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección
     </button>
 
@@ -1370,8 +1370,8 @@
     <button type="button" class="btn listen-btn" id="gameHelpBtn" aria-expanded="false" aria-controls="gameHelpText">
       <span class="listen-icon" aria-hidden="true">⌨</span> ¿Cómo se juega sin ver el tablero?
     </button>
-    <button type="button" class="btn listen-btn" id="gameAudioToggleBtn" aria-pressed="true">
-      <span class="listen-icon" aria-hidden="true">🔊</span> Audiodescripción de la partida: activada
+    <button type="button" class="btn listen-btn" id="gameAudioToggleBtn" aria-pressed="false">
+      <span class="listen-icon" aria-hidden="true">🔇</span> Voz de la página en la partida, para quien no usa lector de pantalla: desactivada
     </button>
     <div id="gameHelpText" class="game-help" hidden>
       <p>Este tablero se puede jugar por completo con el teclado y con narración por voz, sin necesidad de ver la pantalla.</p>
@@ -1644,6 +1644,8 @@
     var vozAuto = false;
     try{ vozAuto = localStorage.getItem("jaqueMatematicoVozAuto") === "on"; }catch(e){}
     var sesionManual = false;   // hay una narración pedida con un botón
+    // Pausa antes de que hable Jorge tras oprimir «Escuchar»: deja que el lector
+    // de pantalla termine de anunciar el botón y así las dos voces no se pisan.
     var keepAliveTimer = null;
     var audioActivo = null;
     var generacion = 0;
@@ -2161,27 +2163,47 @@
       detener();
       var pBtn = document.getElementById("listenPiecesBtn");
       if(pBtn){
-        pBtn.setAttribute("aria-pressed", "false");
+        pBtn.setAttribute("data-sonando", "false");
         pBtn.innerHTML = '<span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección';
       }
       document.querySelectorAll(".piece-card.speaking").forEach(function(el){ el.classList.remove("speaking"); });
 
       var mBtn = document.getElementById("listenMathBtn");
       if(mBtn){
-        mBtn.setAttribute("aria-pressed", "false");
+        mBtn.setAttribute("data-sonando", "false");
         mBtn.innerHTML = '<span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección';
       }
       document.querySelectorAll(".concept.speaking").forEach(function(el){ el.classList.remove("speaking"); });
 
       var rBtn = document.getElementById("listenRulesBtn");
       if(rBtn){
-        rBtn.setAttribute("aria-pressed", "false");
+        rBtn.setAttribute("data-sonando", "false");
         rBtn.innerHTML = '<span class="listen-icon" aria-hidden="true">🔊</span> Escuchar esta sección';
       }
       document.querySelectorAll(".rule-card.speaking").forEach(function(el){ el.classList.remove("speaking"); });
-      document.querySelectorAll(".listen-extra").forEach(function(b){ b.setAttribute("aria-pressed", "false"); });
+      document.querySelectorAll(".listen-extra").forEach(function(b){ b.setAttribute("data-sonando", "false"); });
     }
     window.detenerTodoNarraciones = detenerTodoGlobal;
+
+    // Una sola voz a la vez. La página no puede saber cuándo habla el lector
+    // de pantalla, así que sigue dos reglas fijas:
+    //  1. Al arrancar, el botón no cambia ni su nombre ni su estado accesible
+    //     (el estado va en data-sonando), y JAWS o NVDA no tienen nada que anunciar.
+    //  2. Cualquier acción del estudiante mientras Jorge habla (moverse a otro
+    //     elemento u oprimir una tecla, como Control o Escape) calla a Jorge al
+    //     instante, porque esa acción hace hablar al lector de pantalla.
+    //     Solo Enter o la barra espaciadora sobre el mismo botón quedan para el botón.
+    function narracionActiva(){ return document.querySelector('.listen-btn[data-sonando="true"]'); }
+    document.addEventListener("focusin", function(e){
+      var activo = narracionActiva();
+      if(activo && e.target !== activo) detenerTodoGlobal();
+    });
+    document.addEventListener("keydown", function(e){
+      var activo = narracionActiva();
+      if(!activo) return;
+      if(e.target === activo && (e.key === "Enter" || e.key === " " || e.key === "Spacebar")) return;
+      detenerTodoGlobal();
+    }, true);
 
     return {
       decir: function(texto, opts){
@@ -2482,7 +2504,7 @@
       if(e && e.detail >= 2){ window.detenerTodoNarraciones(); return; }
       ultimoClick = ahora;
 
-      if(btn.getAttribute("aria-pressed") === "true" || (Voz.estaHablando() && btn.getAttribute("aria-pressed") === "true")){
+      if(btn.getAttribute("data-sonando") === "true"){
         window.detenerTodoNarraciones();
         return;
       }
@@ -2490,8 +2512,8 @@
       // Detener cualquier otra narración previa (exclusión mutua universal)
       window.detenerTodoNarraciones();
 
-      btn.setAttribute("aria-pressed","true");
-      btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Pausar narración';
+      btn.setAttribute("data-sonando","true");
+      btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Escuchar esta sección';
 
       Voz.encolar(null, {audioKey: "pieces_intro", manual: true});
       PIECES.forEach(function(p){
@@ -2540,7 +2562,7 @@
       if(e && e.detail >= 2){ window.detenerTodoNarraciones(); return; }
       ultimoClick = ahora;
 
-      if(btn.getAttribute("aria-pressed") === "true" || (Voz.estaHablando() && btn.getAttribute("aria-pressed") === "true")){
+      if(btn.getAttribute("data-sonando") === "true"){
         window.detenerTodoNarraciones();
         return;
       }
@@ -2548,8 +2570,8 @@
       // Detener cualquier otra narración previa (exclusión mutua universal)
       window.detenerTodoNarraciones();
 
-      btn.setAttribute("aria-pressed","true");
-      btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Pausar narración';
+      btn.setAttribute("data-sonando","true");
+      btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Escuchar esta sección';
 
       Voz.encolar(null, {audioKey: "math_intro", manual: true});
       BLOQUES.forEach(function(b){
@@ -2604,7 +2626,7 @@
       if(e && e.detail >= 2){ window.detenerTodoNarraciones(); return; }
       ultimoClick = ahora;
 
-      if(btn.getAttribute("aria-pressed") === "true" || (Voz.estaHablando() && btn.getAttribute("aria-pressed") === "true")){
+      if(btn.getAttribute("data-sonando") === "true"){
         window.detenerTodoNarraciones();
         return;
       }
@@ -2612,8 +2634,8 @@
       // Exclusión mutua universal: detener cualquier otra audiodescripción
       window.detenerTodoNarraciones();
 
-      btn.setAttribute("aria-pressed","true");
-      btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Pausar narración';
+      btn.setAttribute("data-sonando","true");
+      btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Escuchar esta sección';
 
       Voz.encolar("Las reglas del juego. Conoce los conceptos para jugar una partida completa, desde el jaque hasta el jaque mate, tablas y movimientos especiales.", {manual: true});
 
@@ -2830,6 +2852,14 @@
       var g = ORDINAL_GRADO[n];
       return g ? (g + " grado") : m;
     });
+    // Los lectores de pantalla leen «Ciclo I» como «ciclo y» y dicen en voz alta
+    // «abre paréntesis»: en lo que se oye va «Ciclo 1, de sexto grado y séptimo grado».
+    texto = texto.replace(/\bCiclo (III|II|I)\b/g, function(m, r){ return "Ciclo " + ({I:"1", II:"2", III:"3"})[r]; });
+    texto = texto.replace(/\s*\(([^()]*grado[^()]*)\)/g, ", de $1");
+    // «Grados sexto grado y séptimo grado» → «de sexto grado y séptimo grado»;
+    // el punto medio y la raya entre palabras se dicen como una pausa.
+    texto = texto.replace(/\bGrados (\S+ grado y \S+ grado)/g, "de $1");
+    texto = texto.replace(/\s+·\s+/g, ", ").replace(/([A-Za-zÁÉÍÓÚáéíóúñ]{3})–([A-Za-zÁÉÍÓÚáéíóúñ]{3})/g, "$1, $2");
     return texto;
   }
   function gradoHabladoAttr(texto){
@@ -3044,7 +3074,7 @@
       var isOpenAttr = (openCycleId === cid) ? " open" : "";
       var pillText = (openCycleId === cid) ? "▴ Ocultar preguntas" : "▾ Desplegar 16 preguntas";
       html += '<details class="cycle-accordion" id="cycleAcc_'+cid+'" data-cycle-acc="'+cid+'"'+isOpenAttr+'>'+
-                '<summary class="cycle-accordion-summary" aria-label="'+gradoHabladoAttr(meta.title)+'. '+meta.badge+'. Pulsa Enter o clic para desplegar u ocultar las preguntas de este ciclo.">'+
+                '<summary class="cycle-accordion-summary" aria-label="'+gradoHabladoAttr(meta.title)+'. '+gradoHabladoAttr(meta.badge).replace(/\s*\(([^()]*)\)/g, ", $1")+'. Pulsa Enter o clic para desplegar u ocultar las preguntas de este ciclo.">'+
                   '<div class="cycle-sum-left">'+
                     '<div class="cycle-sum-title">'+
                       '<span aria-label="'+gradoHabladoAttr(meta.title)+'">'+meta.title+'</span>'+
@@ -3133,6 +3163,9 @@
         if(det){
           det.open = false;
           det.scrollIntoView({behavior:"smooth", block:"nearest"});
+          // El botón que tenía el foco queda oculto: el foco vuelve al título
+          // del ciclo para que el estudiante no aparezca al final de la página.
+          var sum = det.querySelector("summary"); if(sum) sum.focus({preventScroll:true});
           Voz.decir("Preguntas de " + gradoHablado(CYCLE_META[cid].shortLabel) + " ocultadas.", {interrumpir:true});
         }
       });
@@ -4205,8 +4238,8 @@
     function reflejarEstado(){
       btn.setAttribute("aria-pressed", gameAudioOn ? "true" : "false");
       btn.innerHTML = gameAudioOn
-        ? '<span class="listen-icon" aria-hidden="true">🔊</span> Audiodescripción de la partida: activada'
-        : '<span class="listen-icon" aria-hidden="true">🔇</span> Audiodescripción de la partida: desactivada';
+        ? '<span class="listen-icon" aria-hidden="true">🔊</span> Voz de la página en la partida, para quien no usa lector de pantalla: activada'
+        : '<span class="listen-icon" aria-hidden="true">🔇</span> Voz de la página en la partida, para quien no usa lector de pantalla: desactivada';
     }
     reflejarEstado();
     btn.addEventListener("click", function(){
@@ -4215,8 +4248,11 @@
         Voz.detener();
         gameAudioOn = false;
       } else {
+        // Al encender tampoco habla Jorge: el lector de pantalla ya anuncia el nuevo
+        // nombre del botón y las dos voces se montarían. La voz arranca con la
+        // primera casilla o jugada.
         gameAudioOn = true;
-        Voz.detener(); Voz.encolar(null, {audioKey: "audio_on", manual: true});
+        Voz.detener();
       }
       try{ localStorage.setItem("jaqueMatematicoAudioPartida", gameAudioOn ? "on" : "off"); }catch(e){}
       reflejarEstado();
@@ -5607,12 +5643,12 @@
       var ahora = Date.now();
       if(ahora - ultimo < 900) return;  // clic duplicado del lector de pantalla
       ultimo = ahora;
-      var sonando = b.getAttribute("aria-pressed") === "true";
+      var sonando = b.getAttribute("data-sonando") === "true";
       if(window.detenerTodoNarraciones) window.detenerTodoNarraciones(); else Voz.detener();
       if(sonando) return;
-      b.setAttribute("aria-pressed", "true");
+      b.setAttribute("data-sonando", "true");
       Voz.decir(null, {audioKey: b.getAttribute("data-audio"), interrumpir: true, manual: true});
-      Voz.marcar(function(){ b.setAttribute("aria-pressed", "false"); });
+      Voz.marcar(function(){ b.setAttribute("data-sonando", "false"); });
     });
   });
 })();
