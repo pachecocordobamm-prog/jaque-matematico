@@ -455,7 +455,7 @@
     background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
     padding:18px; box-shadow:var(--shadow);
   }
-  .board-frame{display:grid; grid-template-columns:20px 1fr 20px; grid-template-rows:20px 1fr 20px;}
+  .board-frame{display:grid; grid-template-columns:auto minmax(0,1fr) auto; grid-template-rows:46px 1fr 46px;}
   .board-frame > .files-top{
     display:grid; grid-column:2; grid-row:1; grid-template-columns:repeat(8,1fr);
     font-family:var(--mono); font-size:0.7rem; color:var(--ink-soft);
@@ -471,6 +471,23 @@
   .board-frame > .ranks-right span{display:flex; align-items:center; justify-content:center; transform:rotate(180deg);}
   .files{display:grid; grid-column:2; grid-row:3; grid-template-columns:repeat(8,1fr); font-family:var(--mono); font-size:0.7rem; color:var(--ink-soft);}
   .files span{display:flex; align-items:center; justify-content:center; padding-top:4px;}
+  /* Rótulos con su braille debajo, como en el tablero físico */
+  .board-frame span.coord{flex-direction:column; gap:1px; line-height:1;}
+  .board-frame .coord-txt{font-weight:700; font-size:0.85rem; color:var(--ink);}
+  .board-frame .coord-br{font-style:normal; font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans",sans-serif; font-size:1.35rem; letter-spacing:0.04em; color:var(--ink); white-space:nowrap;}
+  .board-frame > .files-top span.coord{padding-bottom:2px;}
+  .board-frame > .files span.coord{padding-top:2px;}
+  /* En los costados, el número y su braille van uno al lado del otro, para que
+     cada rótulo quepa en la altura de su fila aunque el tablero sea pequeño. */
+  .board-frame > :is(.ranks, .ranks-right) span.coord{flex-direction:row; gap:3px; padding:0 4px; min-height:0; overflow:hidden;}
+  .board-frame > :is(.ranks, .ranks-right) .coord-br{font-size:1.15rem;}
+  @media (max-width:480px){
+    .board-frame .coord-txt{font-size:0.75rem;}
+    .board-frame .coord-br{font-size:1.1rem;}
+    .board-frame > :is(.ranks, .ranks-right) .coord-br{font-size:0.95rem;}
+    .board-frame > :is(.ranks, .ranks-right) span.coord{gap:2px; padding:0 2px;}
+    .board-frame{grid-template-rows:40px 1fr 40px;}
+  }
   .board{
     display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); grid-template-rows:repeat(8,minmax(0,1fr));
     aspect-ratio:1; border-radius:6px; overflow:hidden; border:1px solid var(--line);
@@ -886,7 +903,7 @@
   html[data-zoom-alto="si"] .piece-select button{ min-width:0; }
   html[data-zoom-alto="si"] .board-shell, html[data-zoom-alto="si"] .board-frame{ max-width:100%; width:100%; min-width:0; box-sizing:border-box; }
   /* Con letra grande el tablero ocupa todo el ancho y las coordenadas se ajustan al tamaño de las casillas */
-  html[data-zoom-alto="si"] .board-frame{ grid-template-columns:min(7vw, 2rem) minmax(0,1fr) min(7vw, 2rem); grid-template-rows:min(7vw, 2rem) auto min(7vw, 2rem); }
+  html[data-zoom-alto="si"] .board-frame{ grid-template-columns:auto minmax(0,1fr) auto; grid-template-rows:min(11vw, 3rem) auto min(11vw, 3rem); }
   html[data-zoom-alto="si"] .board-frame > :is(.ranks, .ranks-right, .files, .files-top){ font-size:min(4.2vw, 1.1rem) !important; line-height:1; }
   html[data-zoom-alto="si"] .board-frame > .board, html[data-zoom-alto="si"] .board-frame > .cart-board-wrap{ width:100%; aspect-ratio:1; }
   html[data-zoom-alto="si"] .wrap > *, html[data-zoom-alto="si"] .practice-layout > *{ min-width:0; max-width:100%; }
@@ -1619,6 +1636,17 @@
   window.coordBraille = function(file, rank){
     var CELDAS = ["⠁","⠃","⠉","⠙","⠑","⠋","⠛","⠓"];
     return CELDAS[file] + "⠼" + CELDAS[rank];
+  };
+  /* Rótulo de borde del tablero, como en el tablero físico: la letra o el número
+     y debajo su celda braille. Es solo visual (el marco va con aria-hidden):
+     el lector de pantalla ya dice la casilla completa. */
+  window.rotuloColumna = function(file){
+    var CELDAS = ["⠁","⠃","⠉","⠙","⠑","⠋","⠛","⠓"];
+    return '<span class="coord"><b class="coord-txt">' + FILES[file] + '</b><i class="coord-br">' + CELDAS[file] + '</i></span>';
+  };
+  window.rotuloFila = function(rank){
+    var CELDAS = ["⠁","⠃","⠉","⠙","⠑","⠋","⠛","⠓"];
+    return '<span class="coord"><b class="coord-txt">' + (rank+1) + '</b><i class="coord-br">⠼' + CELDAS[rank] + '</i></span>';
   };
   window.jugadaBraille = function(from, to){
     return window.coordBraille(from[0], from[1]) + " → " + window.coordBraille(to[0], to[1]);
@@ -2718,11 +2746,11 @@
     var filesEl = document.getElementById("filesRow");
     var filesTopEl = document.getElementById("practiceFilesTop");
     var rh = "";
-    for(var r=7;r>=0;r--){ rh += "<span>"+(r+1)+"</span>"; }
+    for(var r=7;r>=0;r--){ rh += window.rotuloFila(r); }
     ranksEl.innerHTML = rh;
     if(ranksRightEl) ranksRightEl.innerHTML = rh;
     var fh = "";
-    for(var f=0; f<8; f++){ fh += "<span>"+FILES[f]+"</span>"; }
+    for(var f=0; f<8; f++){ fh += window.rotuloColumna(f); }
     filesEl.innerHTML = fh;
     if(filesTopEl) filesTopEl.innerHTML = fh;
   }
@@ -3673,8 +3701,8 @@
     var filesTopEl = document.getElementById("cartFilesTop");
     var xnumsEl = document.getElementById("cartXNums");
     var rh="", fh="", xh="";
-    for(var r=7;r>=0;r--){ rh += "<span>"+(r+1)+"</span>"; }
-    for(var f=0; f<8; f++){ fh += "<span>"+FILES[f]+"</span>"; xh += "<span>"+(f+1)+"</span>"; }
+    for(var r=7;r>=0;r--){ rh += window.rotuloFila(r); }
+    for(var f=0; f<8; f++){ fh += window.rotuloColumna(f); xh += "<span>"+(f+1)+"</span>"; }
     ranksEl.innerHTML = rh;
     if(ranksRightEl) ranksRightEl.innerHTML = rh;
     filesEl.innerHTML = fh;
@@ -4141,8 +4169,8 @@
     var ranksRightEl = document.getElementById("ruleRanksRight"), filesTopEl = document.getElementById("ruleFilesTop");
     if(!ranksEl.childElementCount){
       var rh="", fh="";
-      for(var rr=7; rr>=0; rr--){ rh += "<span>"+(rr+1)+"</span>"; }
-      for(var ff=0; ff<8; ff++){ fh += "<span>"+FILES[ff]+"</span>"; }
+      for(var rr=7; rr>=0; rr--){ rh += window.rotuloFila(rr); }
+      for(var ff=0; ff<8; ff++){ fh += window.rotuloColumna(ff); }
       ranksEl.innerHTML = rh; filesEl.innerHTML = fh;
       if(ranksRightEl) ranksRightEl.innerHTML = rh;
       if(filesTopEl) filesTopEl.innerHTML = fh;
@@ -4908,8 +4936,8 @@
     var filesTopEl = document.getElementById("gameFilesTop");
     var rh="", fh="";
     var volteado = tableroVolteado();
-    for(var i=0;i<8;i++){ rh += "<span>"+(volteado ? i+1 : 8-i)+"</span>"; }
-    for(var j=0; j<8; j++){ fh += "<span>"+FILES[volteado ? 7-j : j]+"</span>"; }
+    for(var i=0;i<8;i++){ rh += window.rotuloFila(volteado ? i : 7-i); }
+    for(var j=0; j<8; j++){ fh += window.rotuloColumna(volteado ? 7-j : j); }
     ranksEl.innerHTML = rh;
     if(ranksRightEl) ranksRightEl.innerHTML = rh;
     filesEl.innerHTML = fh;
