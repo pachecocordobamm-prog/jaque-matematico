@@ -2628,7 +2628,7 @@
     focusPracticeSquareEl(f,r);
     var meta = PIECES.filter(function(p){return p.key===state.piece;})[0];
     var pieceName = meta ? meta.label : "Pieza";
-    Voz.decir(pieceName + " de " + sqSpoken(fromPos[0], fromPos[1]) + " a " + sqSpoken(f, r) + ".", {interrumpir:true});
+    Voz.decir(pieceName + " de " + sqSpoken(fromPos[0], fromPos[1]) + " a " + sqSpoken(f, r) + ".", {interrumpir:true, sintetico:true, rate:1.0});
   }
 
   function renderBoard(){
@@ -3525,7 +3525,7 @@
     var destSq = sqSpoken(f, r);
     var deltaXTxt = "delta equis " + (dx >= 0 ? "más " : "menos ") + Math.abs(dx);
     var deltaYTxt = "delta ye " + (dy >= 0 ? "más " : "menos ") + Math.abs(dy);
-    Voz.decir(pieceName + " de " + origSq + " a " + destSq + ". Vector: " + deltaXTxt + ", " + deltaYTxt + ".", {interrumpir:true});
+    Voz.decir(pieceName + " de " + origSq + " a " + destSq + ". Vector: " + deltaXTxt + ", " + deltaYTxt + ".", {interrumpir:true, sintetico:true, rate:1.0});
   }
 
   function sqSpoken(f,r){ return FILES[f] + " " + (r+1); }
@@ -3822,7 +3822,9 @@
     else if(S.result === "mate-white" || S.result === "mate-black") txt += " ¡Jaque mate!";
     else if(S.result === "stalemate") txt += " Tablas por ahogado.";
 
-    Voz.decir(txt, {interrumpir:true});
+    // Jugada libre: voz del navegador, fluida (los fragmentos grabados de
+    // Jorge, encadenados, suenan cortados en frases con casillas).
+    Voz.decir(txt, {interrumpir:true, sintetico:true, rate:1.0});
   }
 
   function showRulePromo(mv){
