@@ -2185,6 +2185,22 @@
     }
     window.detenerTodoNarraciones = detenerTodoGlobal;
 
+    // Actualiza un tablero sin borrar sus casillas: copia a cada casilla existente
+    // los atributos y el contenido nuevos. Así TalkBack y VoiceOver no pierden la
+    // casilla en la que estaba el estudiante después de tocarla.
+    window.parchearCasillas = function(boardEl, html){
+      var tpl = document.createElement("div");
+      tpl.innerHTML = html;
+      var nuevos = tpl.children, viejos = boardEl.children;
+      if(viejos.length !== nuevos.length){ boardEl.innerHTML = html; return; }
+      for(var i=0;i<nuevos.length;i++){
+        var n = nuevos[i], v = viejos[i];
+        Array.prototype.slice.call(v.attributes).forEach(function(a){ if(!n.hasAttribute(a.name)) v.removeAttribute(a.name); });
+        Array.prototype.forEach.call(n.attributes, function(a){ if(v.getAttribute(a.name) !== a.value) v.setAttribute(a.name, a.value); });
+        if(v.innerHTML !== n.innerHTML) v.innerHTML = n.innerHTML;
+      }
+    };
+
     // Una sola voz a la vez. La página no puede saber cuándo habla el lector
     // de pantalla, así que sigue dos reglas fijas:
     //  1. Al arrancar, el botón no cambia ni su nombre ni su estado accesible
@@ -2204,6 +2220,38 @@
       if(e.target === activo && (e.key === "Enter" || e.key === " " || e.key === "Spacebar")) return;
       detenerTodoGlobal();
     }, true);
+
+    // En el teléfono, TalkBack y VoiceOver se manejan con gestos que la página no
+    // recibe, así que se usan las señales que sí llegan:
+    //  · Un doble toque sobre otro elemento llega como clic: Jorge se calla.
+    //  · Si al deslizar el lector avanza más de media pantalla, la página se
+    //    desplaza: el estudiante ya está en otra parte y Jorge se calla.
+    //  · Si se apaga la pantalla o se cambia de aplicación, Jorge se calla.
+    //  · Jorge suena como audio del sistema: el gesto de pausa de TalkBack
+    //    (doble toque con dos dedos) y los botones de pausa del teléfono o de los
+    //    audífonos lo callan, y TalkBack puede bajarle el volumen mientras habla.
+    var yInicio = 0;
+    document.addEventListener("click", function(e){
+      var activo = narracionActiva();
+      var btn = e.target.closest ? e.target.closest(".listen-btn[data-sonando]") : null;
+      if(btn) yInicio = window.scrollY;
+      if(activo && btn !== activo) detenerTodoGlobal();
+    }, true);
+    window.addEventListener("scroll", function(){
+      if(narracionActiva() && Math.abs(window.scrollY - yInicio) > window.innerHeight * 0.5) detenerTodoGlobal();
+    }, {passive: true});
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden && narracionActiva()) detenerTodoGlobal();
+    });
+    if("mediaSession" in navigator){
+      try{
+        navigator.mediaSession.metadata = new MediaMetadata({title: "Narración de Jorge", artist: "Jaque Matemático"});
+        navigator.mediaSession.setActionHandler("pause", detenerTodoGlobal);
+        navigator.mediaSession.setActionHandler("stop", detenerTodoGlobal);
+        // Sin reanudar a media frase: para volver a oír, se usa el botón Escuchar.
+        navigator.mediaSession.setActionHandler("play", function(){});
+      }catch(e){}
+    }
 
     return {
       decir: function(texto, opts){
@@ -2797,13 +2845,16 @@
                 '</div>';
       }
     }
-    boardEl.innerHTML = html;
+    window.parchearCasillas(boardEl, html);
 
-    Array.prototype.forEach.call(boardEl.querySelectorAll(".sqb.legal"), function(sq){
-      sq.addEventListener("click", function(){
+    if(!boardEl.__clicCasillas){
+      boardEl.__clicCasillas = true;
+      boardEl.addEventListener("click", function(e){
+        var sq = e.target.closest ? e.target.closest(".sqb.legal") : null;
+        if(!sq || !boardEl.contains(sq)) return;
         movePracticePieceTo(parseInt(sq.getAttribute("data-f"),10), parseInt(sq.getAttribute("data-r"),10));
       });
-    });
+    }
 
     document.getElementById("statSquare").textContent = sqLabel(state.file, state.rank);
     document.getElementById("statBraille").textContent = window.coordBraille(state.file, state.rank);
@@ -3741,18 +3792,22 @@
                 '</div>';
       }
     }
-    boardEl.innerHTML = html;
+    window.parchearCasillas(boardEl, html);
 
-    Array.prototype.forEach.call(boardEl.querySelectorAll(".sqb.legal, .sqb.legalcap"), function(sq){
-      var f = parseInt(sq.getAttribute("data-f"),10), r = parseInt(sq.getAttribute("data-r"),10);
-      sq.addEventListener("click", function(){ cartMoveTo(f,r); });
-      sq.addEventListener("dragover", function(e){ e.preventDefault(); sq.classList.add("dragover"); });
-      sq.addEventListener("dragleave", function(){ sq.classList.remove("dragover"); });
-      sq.addEventListener("drop", function(e){ e.preventDefault(); sq.classList.remove("dragover"); cartMoveTo(f,r); });
-    });
-    var dragPiece = boardEl.querySelector('.piece-glyph[draggable="true"]');
-    if(dragPiece){
-      dragPiece.addEventListener("dragstart", function(e){ e.dataTransfer.setData("text/plain","piece"); });
+    if(!boardEl.__clicCasillas){
+      boardEl.__clicCasillas = true;
+      var destino = function(e){
+        var sq = e.target.closest ? e.target.closest(".sqb.legal, .sqb.legalcap") : null;
+        return (sq && boardEl.contains(sq)) ? sq : null;
+      };
+      var ir = function(sq){ cartMoveTo(parseInt(sq.getAttribute("data-f"),10), parseInt(sq.getAttribute("data-r"),10)); };
+      boardEl.addEventListener("click", function(e){ var sq = destino(e); if(sq) ir(sq); });
+      boardEl.addEventListener("dragover", function(e){ var sq = destino(e); if(sq){ e.preventDefault(); sq.classList.add("dragover"); } });
+      boardEl.addEventListener("dragleave", function(e){ var sq = destino(e); if(sq) sq.classList.remove("dragover"); });
+      boardEl.addEventListener("drop", function(e){ var sq = destino(e); if(sq){ e.preventDefault(); sq.classList.remove("dragover"); ir(sq); } });
+      boardEl.addEventListener("dragstart", function(e){
+        if(e.target.closest && e.target.closest('.piece-glyph[draggable="true"]')) e.dataTransfer.setData("text/plain","piece");
+      });
     }
 
     document.getElementById("cartA").textContent = sqLabel(cart.pos[0],cart.pos[1]) + " → (" + (cart.pos[0]+1) + ", " + (cart.pos[1]+1) + ")";
@@ -4069,15 +4124,18 @@
                 '</div>';
       }
     }
-    boardEl.innerHTML = html;
-    Array.prototype.forEach.call(boardEl.querySelectorAll(".sqb"), function(sq){
-      sq.addEventListener("click", function(){
+    window.parchearCasillas(boardEl, html);
+    if(!boardEl.__clicCasillas){
+      boardEl.__clicCasillas = true;
+      boardEl.addEventListener("click", function(e){
+        var sq = e.target.closest ? e.target.closest(".sqb") : null;
+        if(!sq || !boardEl.contains(sq)) return;
         var f = parseInt(sq.getAttribute("data-f"),10), r = parseInt(sq.getAttribute("data-r"),10);
         if(!S) return;  // regla sin tablero (50 jugadas, triple repetición)
         S.focusSq = [f,r];
         onRuleSquareClick(f, r);
       });
-    });
+    }
 
     var ranksEl = document.getElementById("ruleRanksCol"), filesEl = document.getElementById("ruleFilesRow");
     var ranksRightEl = document.getElementById("ruleRanksRight"), filesTopEl = document.getElementById("ruleFilesTop");
@@ -5299,7 +5357,28 @@
       boardEl.setAttribute("data-volteado", String(volteado));
       gameRenderRanksFiles();
     }
-    var html = "";
+    // Las 64 casillas se crean una sola vez y después solo se actualizan.
+    // Si se borraran y se volvieran a dibujar en cada toque, TalkBack y
+    // VoiceOver perderían la casilla en la que estaba el estudiante y saltarían
+    // a otra parte de la página, y no podría tocar la casilla de destino.
+    var slots = boardEl.querySelectorAll(".sqb");
+    if(slots.length !== 64){
+      var crear = "";
+      for(var k=0;k<64;k++) crear += '<div class="sqb" role="button" tabindex="-1"></div>';
+      boardEl.innerHTML = crear;
+      slots = boardEl.querySelectorAll(".sqb");
+    }
+    if(!boardEl.__clicCasillas){
+      boardEl.__clicCasillas = true;
+      boardEl.addEventListener("click", function(e){
+        var sq = e.target.closest ? e.target.closest(".sqb") : null;
+        if(!sq || !boardEl.contains(sq)) return;
+        var f = parseInt(sq.getAttribute("data-f"),10), r = parseInt(sq.getAttribute("data-r"),10);
+        G.focusSq = [f,r];
+        onGameSquareClick(f, r);
+      });
+    }
+    function poner(el, attr, val){ if(el.getAttribute(attr) !== val) el.setAttribute(attr, val); }
     for(var i=0;i<8;i++){
       for(var j=0; j<8; j++){
         // Con negras se voltea el tablero: el 8 queda abajo, frente al
@@ -5318,20 +5397,20 @@
           else if(G.lastMove.to[0]===f && G.lastMove.to[1]===r) cls += " lastmove-to";
         }
         var isFocus = G.focusSq[0]===f && G.focusSq[1]===r;
-        var label = squareDescription(f,r,legalTo);
-        html += '<div class="'+cls+'" data-f="'+f+'" data-r="'+r+'" role="button" tabindex="'+(isFocus?"0":"-1")+'" aria-label="'+label+'" aria-pressed="'+(isSelected?"true":"false")+'">' +
-                  (piece ? '<span class="piece-glyph'+(piece.color==="b"?" black":"")+'">'+pieceGlyph(piece)+'</span>' : '') +
-                '</div>';
+        var el = slots[i*8+j];
+        if(el.className !== cls) el.className = cls;
+        poner(el, "data-f", String(f));
+        poner(el, "data-r", String(r));
+        poner(el, "tabindex", isFocus ? "0" : "-1");
+        poner(el, "aria-label", squareDescription(f,r,legalTo));
+        poner(el, "aria-pressed", isSelected ? "true" : "false");
+        var pk = piece ? piece.color + piece.type : "";
+        if(el.getAttribute("data-pieza") !== pk){
+          el.setAttribute("data-pieza", pk);
+          el.innerHTML = piece ? '<span class="piece-glyph'+(piece.color==="b"?" black":"")+'">'+pieceGlyph(piece)+'</span>' : '';
+        }
       }
     }
-    boardEl.innerHTML = html;
-    Array.prototype.forEach.call(boardEl.querySelectorAll(".sqb"), function(sq){
-      sq.addEventListener("click", function(){
-        var f = parseInt(sq.getAttribute("data-f"),10), r = parseInt(sq.getAttribute("data-r"),10);
-        G.focusSq = [f,r];
-        onGameSquareClick(f, r);
-      });
-    });
 
     var statusEl = document.getElementById("gameStatus");
     if(!G.over){
