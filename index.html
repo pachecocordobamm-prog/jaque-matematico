@@ -924,6 +924,7 @@
       <button type="button" class="a11y-btn" id="fontIncBtn" title="Ampliar tamaño de letra para baja visión" aria-label="Ampliar tamaño de letra para baja visión">A+</button>
       <button type="button" class="a11y-btn" id="themeToggleBtn" aria-pressed="false" title="Cambiar entre modo claro y modo oscuro"><span aria-hidden="true">☾</span> Modo oscuro</button>
       <button type="button" class="a11y-btn" id="contrastToggleBtn" aria-pressed="false" title="Activar tema de alto contraste para baja visión"><span aria-hidden="true">◐</span> Alto contraste</button>
+      <button type="button" class="a11y-btn" id="vozAutoBtn" aria-pressed="false" title="Si está apagada, la voz solo suena con los botones Escuchar de cada apartado"><span aria-hidden="true">🔇</span> Voz automática: apagada</button>
     </div>
   </div>
 </nav>
@@ -1636,6 +1637,13 @@
     var vozElegida = null, vozLista = false;
     var cola = [], hablando = false;
     var silenciadaGlobal = false;
+    /* Voz automática (apagada por defecto): la página solo habla cuando el
+       estudiante oprime un botón «Escuchar…». Así la voz de Jorge no se cruza
+       con el lector de pantalla (JAWS, NVDA, TalkBack, VoiceOver). Lo que la
+       página iba a decir sola pasa a la región viva, y lo lee el propio lector. */
+    var vozAuto = false;
+    try{ vozAuto = localStorage.getItem("jaqueMatematicoVozAuto") === "on"; }catch(e){}
+    var sesionManual = false;   // hay una narración pedida con un botón
     var keepAliveTimer = null;
     var audioActivo = null;
     var generacion = 0;
@@ -1976,7 +1984,8 @@
     }
 
     function procesarCola(){
-      if(hablando || !cola.length) return;
+      if(hablando) return;
+      if(!cola.length){ sesionManual = false; return; }
       var item = cola[0];
       if(item.evento === "marca"){
         cola.shift();
@@ -2116,6 +2125,11 @@
         notificarAriaLive(texto);
         return;
       }
+      if(!vozAuto && !opts.manual && !opts.forzar && !sesionManual){
+        if(texto) notificarAriaLive(texto);
+        return;
+      }
+      if(opts.manual) sesionManual = true;
       cola.push({texto: texto, audioKey: opts.audioKey, rate: opts.rate, pitch: opts.pitch, sintetico: !!opts.sintetico});
       procesarCola();
     }
@@ -2129,6 +2143,7 @@
       generacion++;
       cola = [];
       hablando = false;
+      sesionManual = false;
       detenerKeepAlive();
       if(audioActivo){
         try{ audioActivo.pause(); }catch(e){}
@@ -2169,8 +2184,23 @@
     window.detenerTodoNarraciones = detenerTodoGlobal;
 
     return {
-      decir: function(texto, opts){ opts = opts || {}; if(opts.interrumpir) detener(); encolar(texto, opts); },
+      decir: function(texto, opts){
+        opts = opts || {};
+        // Con la voz automática apagada, un aviso automático no corta la narración
+        // que el estudiante pidió: solo se pasa al lector de pantalla.
+        if(!vozAuto && !opts.manual && !opts.forzar){ if(texto) notificarAriaLive(texto); return; }
+        if(opts.interrumpir) detener();
+        encolar(texto, opts);
+      },
       encolar: encolar,
+      iniciarManual: function(){ sesionManual = true; },
+      vozAutomatica: function(){ return vozAuto; },
+      fijarVozAutomatica: function(on){
+        vozAuto = !!on;
+        if(!vozAuto) detener();
+        try{ localStorage.setItem("jaqueMatematicoVozAuto", vozAuto ? "on" : "off"); }catch(e){}
+        return vozAuto;
+      },
       marcar: marcar,
       detener: detener,
       detenerTodo: detenerTodoGlobal,
@@ -2463,7 +2493,7 @@
       btn.setAttribute("aria-pressed","true");
       btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Pausar narración';
 
-      Voz.encolar(null, {audioKey: "pieces_intro"});
+      Voz.encolar(null, {audioKey: "pieces_intro", manual: true});
       PIECES.forEach(function(p){
         Voz.marcar(function(){
           limpiar();
@@ -2521,7 +2551,7 @@
       btn.setAttribute("aria-pressed","true");
       btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Pausar narración';
 
-      Voz.encolar(null, {audioKey: "math_intro"});
+      Voz.encolar(null, {audioKey: "math_intro", manual: true});
       BLOQUES.forEach(function(b){
         Voz.marcar(function(){
           limpiar();
@@ -2585,7 +2615,7 @@
       btn.setAttribute("aria-pressed","true");
       btn.innerHTML = '<span class="listen-icon" aria-hidden="true">⏸</span> Pausar narración';
 
-      Voz.encolar("Las reglas del juego. Conoce los conceptos para jugar una partida completa, desde el jaque hasta el jaque mate, tablas y movimientos especiales.");
+      Voz.encolar("Las reglas del juego. Conoce los conceptos para jugar una partida completa, desde el jaque hasta el jaque mate, tablas y movimientos especiales.", {manual: true});
 
       REGLAS_LISTA.forEach(function(r){
         Voz.marcar(function(){
@@ -4153,17 +4183,21 @@
   /* ---------------- Audiodescripción de la partida: encendido/apagado ----------------
      Afecta solo a este tablero (narrateMove, navegación con flechas, mensajes de
      reinicio, coronación, entrada de jugadas por texto y el aviso de "saltar a jugar").
-     Por defecto queda ENCENDIDA para no quitarle nada a quien ya depende de ella;
-     cada estudiante puede apagarla o prenderla con el botón, y la elección se
-     recuerda en este navegador. */
-  var gameAudioOn = true;
+     Por defecto queda APAGADA, igual que la voz automática de la página, para no
+     cruzarse con el lector de pantalla; el estudiante la prende con el botón si
+     quiere oír las jugadas, y la elección se recuerda en este navegador. */
+  var gameAudioOn = Voz.vozAutomatica();
   try{
     var _gaStored = localStorage.getItem("jaqueMatematicoAudioPartida");
     if(_gaStored === "off") gameAudioOn = false;
-  }catch(e){ /* localStorage no disponible; se queda encendida por defecto */ }
+    else if(_gaStored === "on") gameAudioOn = true;
+  }catch(e){ /* localStorage no disponible: se queda como la voz automática */ }
 
-  function gameVozDecir(texto, opts){ if(gameAudioOn) Voz.decir(texto, opts); }
-  function gameVozEncolar(texto, opts){ if(gameAudioOn) Voz.encolar(texto, opts); }
+  // Con la audiodescripción de la partida encendida, sus avisos cuentan como pedidos
+  // por el estudiante: suenan aunque la voz automática de la página esté apagada.
+  function conPedido(opts){ var r = {}; if(opts){ for(var k in opts){ if(Object.prototype.hasOwnProperty.call(opts,k)) r[k] = opts[k]; } } r.manual = true; return r; }
+  function gameVozDecir(texto, opts){ if(gameAudioOn) Voz.decir(texto, conPedido(opts)); }
+  function gameVozEncolar(texto, opts){ if(gameAudioOn) Voz.encolar(texto, conPedido(opts)); }
 
   (function wireGameAudioToggle(){
     var btn = document.getElementById("gameAudioToggleBtn");
@@ -4177,12 +4211,12 @@
     reflejarEstado();
     btn.addEventListener("click", function(){
       if(gameAudioOn){
-        // Se avisa ANTES de apagar, para que el mensaje sí se escuche.
-        Voz.detener(); Voz.encolar(null, {audioKey: "audio_off"});
+        // Al apagar se calla de inmediato: el lector ya anuncia el nuevo estado del botón.
+        Voz.detener();
         gameAudioOn = false;
       } else {
         gameAudioOn = true;
-        Voz.detener(); Voz.encolar(null, {audioKey: "audio_on"});
+        Voz.detener(); Voz.encolar(null, {audioKey: "audio_on", manual: true});
       }
       try{ localStorage.setItem("jaqueMatematicoAudioPartida", gameAudioOn ? "on" : "off"); }catch(e){}
       reflejarEstado();
@@ -4847,7 +4881,7 @@
     if(!G.over) frases.push("Turno de las " + colorSpoken(G.state.turn) + ".");
 
     moveAnnouncementPending = true;
-    Voz.decir(frases.join(" "), {interrumpir:true, sintetico:true, rate:VELOCIDAD_PARTIDA});
+    Voz.decir(frases.join(" "), {interrumpir:true, sintetico:true, rate:VELOCIDAD_PARTIDA, manual:true});
     Voz.marcar(function(){ moveAnnouncementPending = false; });
   }
 
@@ -5041,8 +5075,8 @@
       var abierto = btn.getAttribute("aria-expanded") === "true";
       btn.setAttribute("aria-expanded", abierto ? "false" : "true");
       panel.hidden = abierto;
-      if(window.detenerTodoNarraciones) window.detenerTodoNarraciones();
-      Voz.decir(null, {audioKey: abierto ? "game_help_hidden" : "game_help", interrumpir:true});
+      if(gameAudioOn && window.detenerTodoNarraciones) window.detenerTodoNarraciones();
+      gameVozDecir(null, {audioKey: abierto ? "game_help_hidden" : "game_help", interrumpir:true});
     });
   })();
 
@@ -5120,7 +5154,7 @@
           HINTS_ON = btn.getAttribute("data-hint") === "on";
           try{ localStorage.setItem("jaqueMatematicoPistas", HINTS_ON ? "on" : "off"); }catch(e){}
           if(!HINTS_ON){ var h = document.getElementById("gameHint"); if(h) h.hidden = true; }
-          if(gameAudioOn){ Voz.detener(); Voz.encolar(null, {audioKey: HINTS_ON ? "hint_on" : "hint_off"}); }
+          if(gameAudioOn){ Voz.detener(); Voz.encolar(null, {audioKey: HINTS_ON ? "hint_on" : "hint_off", manual: true}); }
         });
       });
     }
@@ -5329,6 +5363,7 @@
     renderGame();
     if(!silencioso && gameAudioOn){
       Voz.detener();
+      Voz.iniciarManual();   // audiodescripción de la partida encendida por el estudiante
       if(avisoOpcion) Voz.encolar(null, {audioKey: avisoOpcion});
       if(SETTINGS.mode==="bot"){
         Voz.encolar(null, {audioKey: SETTINGS.playerColor==="w" ? "game_start_bot_w" : "game_start_bot_b"});
@@ -5545,6 +5580,25 @@
 </script>
 
 <script>
+/* Interruptor «Voz automática»: apagada por defecto. Apagada, la página solo habla
+   con los botones «Escuchar esta sección» (y la audiodescripción de la partida, si
+   se prende); encendida, vuelve a narrar sola al mover piezas, abrir categorías, etc. */
+(function(){
+  var b = document.getElementById("vozAutoBtn");
+  if(!b || !window.Voz || !Voz.vozAutomatica) return;
+  function reflejar(){
+    var on = Voz.vozAutomatica();
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    b.innerHTML = on ? '<span aria-hidden="true">🔊</span> Voz automática: encendida'
+                     : '<span aria-hidden="true">🔇</span> Voz automática: apagada';
+  }
+  reflejar();
+  b.addEventListener("click", function(){
+    if(window.detenerTodoNarraciones) window.detenerTodoNarraciones();
+    Voz.fijarVozAutomatica(!Voz.vozAutomatica());
+    reflejar();
+  });
+})();
 /* «Escuchar esta sección» del plano, la práctica y el simulacro (voz de Jorge). */
 (function(){
   document.querySelectorAll(".listen-extra").forEach(function(b){
@@ -5557,7 +5611,7 @@
       if(window.detenerTodoNarraciones) window.detenerTodoNarraciones(); else Voz.detener();
       if(sonando) return;
       b.setAttribute("aria-pressed", "true");
-      Voz.decir(null, {audioKey: b.getAttribute("data-audio"), interrumpir: true});
+      Voz.decir(null, {audioKey: b.getAttribute("data-audio"), interrumpir: true, manual: true});
       Voz.marcar(function(){ b.setAttribute("aria-pressed", "false"); });
     });
   });
@@ -5696,6 +5750,8 @@
   function describir(el){
     var k = el.getAttribute("data-alt-audio");
     if(!k || !window.Voz || !(window.AUDIOS_JORGE && AUDIOS_JORGE[k])) return;
+    // Con la voz automática apagada, la figura la describe el lector con su texto alternativo.
+    if(Voz.vozAutomatica && !Voz.vozAutomatica()) return;
     var ahora = Date.now();
     if(k === ultimaClave && ahora - ultimaVez < 4000) return;   // no repetir de inmediato
     ultimaClave = k; ultimaVez = ahora;
