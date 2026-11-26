@@ -5626,9 +5626,19 @@
     var f = figuraDe(e.target);
     if(!f || f.id === "cartSvg") return;
     if(f.classList.contains("ricon")) e.stopPropagation();
-    ultimaClave = "";  // un toque pedido siempre suena
-    describir(f);
+    pedirDescripcion(f);
   }, true);
+  // Un toque o clic pedido suena, salvo que Jorge YA esté describiendo esa
+  // misma figura (por ejemplo, porque el cursor se quedó encima medio
+  // segundo antes del clic, o por un doble toque): así no empieza de nuevo
+  // ni se repite dos o tres veces seguidas.
+  function pedirDescripcion(f){
+    clearTimeout(espera);
+    var k = f.getAttribute("data-alt-audio");
+    if(k === ultimaClave && window.Voz && Voz.estaHablando()) return;
+    ultimaClave = "";
+    describir(f);
+  }
   // Con teclado: las figuras grandes se pueden enfocar y se describen con Enter o la barra espaciadora
   function enfocables(){
     document.querySelectorAll("#heroBoard, .mini-board[data-alt-audio]").forEach(function(el){
@@ -5640,7 +5650,7 @@
     if(e.key !== "Enter" && e.key !== " ") return;
     var f = e.target && e.target.getAttribute && e.target.getAttribute("data-alt-audio") ? e.target : null;
     if(!f || f.classList.contains("ricon")) return;
-    e.preventDefault(); ultimaClave = ""; describir(f);
+    e.preventDefault(); pedirDescripcion(f);
   });
 })();
 </script>
