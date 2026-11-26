@@ -506,6 +506,18 @@
   .sqb .piece-glyph.rot180{
     transform:rotate(180deg);
   }
+  /* Tablero volteado (el estudiante juega con negras): sus piezas quedan
+     derechas, de frente a él, y las blancas del rival giradas. */
+  #gameBoard[data-volteado="true"] .sqb .piece-glyph.black{
+    transform:none;
+    filter:
+      drop-shadow(0 0 1.4px rgba(255,250,240,0.98))
+      drop-shadow(0 0 2.2px rgba(245,232,205,0.85))
+      drop-shadow(0 2px 2.5px rgba(0,0,0,0.48));
+  }
+  #gameBoard[data-volteado="true"] .sqb .piece-glyph:not(.black){
+    transform:rotate(180deg);
+  }
   .piece-card .glyph{
     display:inline-flex; align-items:center; justify-content:center;
     width:2.5rem; height:2.5rem; vertical-align:middle;
@@ -1479,16 +1491,17 @@
 <footer id="declaracion-accesibilidad" role="contentinfo" aria-label="Pie de página y Declaración de accesibilidad">
   <p><span class="pawn" aria-hidden="true">♟</span> <strong>Jaque Matemático</strong>. Proyecto pedagógico investigativo desarrollado por <strong>Martín Camilo Pacheco Córdoba</strong> y <strong>Luis David Delgado López</strong>. Práctica Pedagógica Integral e Investigativa, Licenciatura en Matemáticas, Universidad Popular del Cesar (Valledupar, Cesar, 2026).</p>
   <div class="a11y-statement" role="region" aria-label="Declaración de accesibilidad digital">
-    <h2>♿ Declaración de accesibilidad digital (Sin Barreras Digitales, WCAG 2.1 AA y NTC 5854)</h2>
-    <p>La plataforma educativa <strong>Jaque Matemático</strong> (desarrollada en el marco de la Práctica Profesional II de la Licenciatura en Matemáticas de la <strong>Universidad Popular del Cesar</strong> para la <strong>Institución Educativa Técnica José Eugenio Martínez</strong> de Valledupar) se compromete a garantizar la accesibilidad digital para estudiantes con ceguera, baja visión y diversidad funcional, en cumplimiento de las pautas <strong>WCAG 2.1 nivel AA</strong> (W3C), la norma <strong>NTC 5854</strong>, la <strong>Ley Estatutaria 1618 de 2013</strong>, la <strong>Resolución 1519 de 2020 de MinTIC</strong>, el <strong>Decreto 1421 de 2017</strong> y la <a href="https://sinbarrerasdigitales.saldarriagaconcha.org/" target="_blank" rel="noopener">Ruta de Accesibilidad Digital «Sin Barreras Digitales» de la Fundación Saldarriaga Concha (2025)</a>.</p>
+    <h2>♿ Declaración de accesibilidad</h2>
+    <p><strong>Jaque Matemático</strong> busca cumplir las pautas <strong>WCAG 2.1 nivel AA</strong> y la norma <strong>NTC 5854</strong>, para que estudiantes ciegos y con baja visión la usen sin barreras.</p>
     <ul>
-      <li><strong>Perceptible:</strong> Textos alternativos concisos (≤ 250 caracteres) en todas las fichas Staunton, minitableros, iconos de reglas, flechas vectoriales y piezas capturadas; relación de contraste superior a 4.5:1 en modo estándar y superior a 12:1 en el modo <em>◐ Alto contraste</em>; ampliación tipográfica de 90 % a 300 % (<em>A− / 100% / A+</em>), con el contenido reacomodado en una sola columna y sin desplazamiento horizontal; y marcas geométricas redundantes en cada casilla.</li>
-      <li><strong>Operable:</strong> Navegación íntegra por teclado (<em>Tab</em>, <em>Flechas</em>, <em>Enter</em> y <em>Espacio</em>), enlaces para saltar directamente las 64 casillas de cada tablero, botón de deslizamiento rápido para gestos de 2 y 3 dedos en lectores móviles (TalkBack y VoiceOver) y partidas sin límite de tiempo.</li>
-      <li><strong>Comprensible y Robusto:</strong> Lenguaje claro graduado por ciclos curriculares (6°–7°, 8°–9° y 10°–11°), audiodescripciones grabadas con voz neuronal (Jorge, es-MX) en todas las secciones, voz del navegador solo para narrar las jugadas libres de la partida completa, textos alternativos de todas las figuras leídos también por Jorge al tocar la figura o pasar el cursor sobre ella; navegación por botones de categorías y por regiones con nombre, y registro estudiantil anonimizado conforme a la <strong>Ley Estatutaria 1581 de 2012</strong>.</li>
+      <li>Se puede usar completa con teclado y con lectores de pantalla (JAWS, NVDA, TalkBack y VoiceOver).</li>
+      <li>Las imágenes y los tableros tienen texto alternativo y audiodescripción con voz.</li>
+      <li>Tiene modo de alto contraste y el texto se puede agrandar hasta 300 %.</li>
     </ul>
-    <p><strong>Estado de conformidad:</strong> parcial, según la NTC 5854. La página cumple los criterios comprobables de WCAG 2.1 nivel AA revisados con herramientas y con recorridos de teclado y voz.</p>
+    <p><strong>Estado:</strong> cumplimiento parcial, revisado con herramientas y con pruebas de teclado y voz.</p>
+    <p><strong>Marco legal:</strong> Ley Estatutaria 1618 de 2013 y Resolución 1519 de 2020 de MinTIC.</p>
+    <p><strong>¿Encontraste una barrera?</strong> Escríbele a <strong>Martín Camilo Pacheco Córdoba</strong> o a <strong>Luis David Delgado López</strong>.</p>
     <p><a href="#categorias">Mapa del sitio: ir a las categorías</a></p>
-    <p><strong>Contacto y reporte de barreras de accesibilidad:</strong> Si encuentras alguna barrera de acceso o deseas sugerir una mejora, comunícate con los docentes practicantes <strong>Martín Camilo Pacheco Córdoba</strong> y <strong>Luis David Delgado López</strong> o con el equipo de apoyo tiflológico en el área de Matemáticas de la I.E.T. José Eugenio Martínez (Valledupar, Cesar).</p>
   </div>
 </footer>
 
@@ -4630,14 +4643,21 @@
     };
   }
 
+  // El tablero se ve desde el lado del estudiante: si juega con negras
+  // contra el computador, las negras quedan abajo (el 8 frente a él).
+  function tableroVolteado(){
+    return SETTINGS.mode === "bot" && SETTINGS.playerColor === "b";
+  }
+
   function gameRenderRanksFiles(){
     var ranksEl = document.getElementById("gameRanksCol");
     var ranksRightEl = document.getElementById("gameRanksRight");
     var filesEl = document.getElementById("gameFilesRow");
     var filesTopEl = document.getElementById("gameFilesTop");
     var rh="", fh="";
-    for(var r=7;r>=0;r--){ rh += "<span>"+(r+1)+"</span>"; }
-    for(var f=0; f<8; f++){ fh += "<span>"+FILES[f]+"</span>"; }
+    var volteado = tableroVolteado();
+    for(var i=0;i<8;i++){ rh += "<span>"+(volteado ? i+1 : 8-i)+"</span>"; }
+    for(var j=0; j<8; j++){ fh += "<span>"+FILES[volteado ? 7-j : j]+"</span>"; }
     ranksEl.innerHTML = rh;
     if(ranksRightEl) ranksRightEl.innerHTML = rh;
     filesEl.innerHTML = fh;
@@ -5074,11 +5094,20 @@
     var hadBoardFocus = !!(boardEl && boardEl.contains && document.activeElement && boardEl.contains(document.activeElement));
     var legalTo = {};
     G.legalForSelected.forEach(function(m){ legalTo[m.to[0]+","+m.to[1]] = m.capture || m.enPassant; });
-    if(!G.focusSq) G.focusSq = [4,1];
+    if(!G.focusSq) G.focusSq = tableroVolteado() ? [4,6] : [4,1];
 
+    var volteado = tableroVolteado();
+    if(boardEl.getAttribute("data-volteado") !== String(volteado)){
+      boardEl.setAttribute("data-volteado", String(volteado));
+      gameRenderRanksFiles();
+    }
     var html = "";
-    for(var r=7;r>=0;r--){
-      for(var f=0; f<8; f++){
+    for(var i=0;i<8;i++){
+      for(var j=0; j<8; j++){
+        // Con negras se voltea el tablero: el 8 queda abajo, frente al
+        // estudiante, y la columna h a su izquierda.
+        var r = volteado ? i : 7-i;
+        var f = volteado ? 7-j : j;
         var dark = (f+r)%2===0;
         var cls = "sqb " + (dark?"d":"l");
         var piece = G.board[r][f];
@@ -5188,7 +5217,7 @@
   }
 
   function moveFocus(df,dr){
-    if(!G.focusSq) G.focusSq = [4,1];
+    if(!G.focusSq) G.focusSq = tableroVolteado() ? [4,6] : [4,1];
     var f = Math.min(7, Math.max(0, G.focusSq[0]+df));
     var r = Math.min(7, Math.max(0, G.focusSq[1]+dr));
     var moved = (f!==G.focusSq[0] || r!==G.focusSq[1]);
@@ -5209,10 +5238,13 @@
     var t = e.target;
     if(!t.classList || !t.classList.contains("sqb")) return;
     var f = parseInt(t.getAttribute("data-f"),10), r = parseInt(t.getAttribute("data-r"),10);
-    if(e.key==="ArrowUp"){ e.preventDefault(); moveFocus(0,1); }
-    else if(e.key==="ArrowDown"){ e.preventDefault(); moveFocus(0,-1); }
-    else if(e.key==="ArrowLeft"){ e.preventDefault(); moveFocus(-1,0); }
-    else if(e.key==="ArrowRight"){ e.preventDefault(); moveFocus(1,0); }
+    // Las flechas siguen lo que se ve: con el tablero volteado, «arriba»
+    // va hacia el 1 y «derecha» hacia la columna a.
+    var s = tableroVolteado() ? -1 : 1;
+    if(e.key==="ArrowUp"){ e.preventDefault(); moveFocus(0,s); }
+    else if(e.key==="ArrowDown"){ e.preventDefault(); moveFocus(0,-s); }
+    else if(e.key==="ArrowLeft"){ e.preventDefault(); moveFocus(-s,0); }
+    else if(e.key==="ArrowRight"){ e.preventDefault(); moveFocus(s,0); }
     else if(e.key==="Enter" || e.key===" "){ e.preventDefault(); onGameSquareClick(f,r); }
   });
 
