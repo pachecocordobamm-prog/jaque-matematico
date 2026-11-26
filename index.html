@@ -455,7 +455,7 @@
     background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
     padding:18px; box-shadow:var(--shadow);
   }
-  .board-frame{display:grid; grid-template-columns:auto minmax(0,1fr) auto; grid-template-rows:46px 1fr 46px;}
+  .board-frame{display:grid; grid-template-columns:auto minmax(0,1fr) auto; grid-template-rows:32px 1fr 32px;}
   .board-frame > .files-top{
     display:grid; grid-column:2; grid-row:1; grid-template-columns:repeat(8,1fr);
     font-family:var(--mono); font-size:0.7rem; color:var(--ink-soft);
@@ -471,20 +471,21 @@
   .board-frame > .ranks-right span{display:flex; align-items:center; justify-content:center; transform:rotate(180deg);}
   .files{display:grid; grid-column:2; grid-row:3; grid-template-columns:repeat(8,1fr); font-family:var(--mono); font-size:0.7rem; color:var(--ink-soft);}
   .files span{display:flex; align-items:center; justify-content:center; padding-top:4px;}
-  /* Rótulos con su braille debajo, como en el tablero físico */
-  .board-frame span.coord{flex-direction:column; gap:1px; line-height:1;}
+  /* Rótulos con su braille, como en el tablero físico: cada letra de columna
+     lleva su celda braille al lado (a ⠁) y cada número de fila la lleva debajo
+     (8 y debajo ⠼⠓). */
+  .board-frame span.coord{gap:1px; line-height:1;}
   .board-frame .coord-txt{font-weight:700; font-size:0.85rem; color:var(--ink);}
-  .board-frame .coord-br{font-style:normal; font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans",sans-serif; font-size:1.35rem; letter-spacing:0.04em; color:var(--ink); white-space:nowrap;}
+  .board-frame .coord-br{font-style:normal; font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans",sans-serif; font-size:1.3rem; letter-spacing:0.04em; color:var(--ink); white-space:nowrap;}
+  .board-frame > :is(.files, .files-top) span.coord{flex-direction:row; gap:4px;}
   .board-frame > .files-top span.coord{padding-bottom:2px;}
   .board-frame > .files span.coord{padding-top:2px;}
-  /* En los costados, el número y su braille van uno al lado del otro, para que
-     cada rótulo quepa en la altura de su fila aunque el tablero sea pequeño. */
-  .board-frame > :is(.ranks, .ranks-right) span.coord{flex-direction:row; gap:3px; padding:0 4px; min-height:0; overflow:hidden;}
-  .board-frame > :is(.ranks, .ranks-right) .coord-br{font-size:1.15rem;}
+  .board-frame > :is(.ranks, .ranks-right) span.coord{flex-direction:column; padding:0 5px; min-height:0; overflow:hidden;}
+  .board-frame > :is(.ranks, .ranks-right) .coord-br{font-size:1.1rem;}
   /* Teléfono: casillas lo más cerca posible de 44 px para tocarlas con el dedo.
      El marco del tablero sale del margen de la página y ocupa el ancho de la
      pantalla menos 4 px por lado; se dejan solo los rótulos de abajo (letras) y
-     de la izquierda (números), cada uno con su braille debajo. */
+     de la izquierda (números). */
   @media (max-width:480px){
     .board-shell{
       width:100vw; max-width:none; box-sizing:border-box;
@@ -494,11 +495,12 @@
     }
     /* Solo el tablero usa todo el ancho; lo demás de la tarjeta conserva su margen */
     .board-shell > :not(.board-frame){margin-left:12px; margin-right:12px;}
-    .board-frame{grid-template-columns:auto minmax(0,1fr) 0; grid-template-rows:0 1fr 40px;}
+    .board-frame{grid-template-columns:auto minmax(0,1fr) 0; grid-template-rows:0 1fr 32px;}
     .board-frame > :is(.files-top, .ranks-right){display:none;}
-    .board-frame .coord-txt{font-size:0.75rem;}
-    .board-frame .coord-br{font-size:1.1rem;}
-    .board-frame > .ranks span.coord{flex-direction:column; gap:1px; padding:0 3px 0 0;}
+    .board-frame .coord-txt{font-size:0.8rem;}
+    .board-frame .coord-br{font-size:1.15rem;}
+    .board-frame > :is(.files, .files-top) span.coord{gap:3px;}
+    .board-frame > .ranks span.coord{padding:0 3px 0 0;}
     .board-frame > .ranks .coord-br{font-size:0.95rem;}
   }
   .board{
