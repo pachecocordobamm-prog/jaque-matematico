@@ -1614,6 +1614,31 @@
     var silenciadaGlobal = false;
     var keepAliveTimer = null;
     var audioActivo = null;
+    var generacion = 0;
+    // Un solo reproductor para toda la página: en iPhone, una vez que el
+    // estudiante toca la pantalla queda habilitado y Jorge puede encadenar audios.
+    var reproductor = null;
+    function obtenerReproductor(){
+      if(!reproductor){ reproductor = new window.Audio(); reproductor.preload = "auto"; }
+      return reproductor;
+    }
+    function desbloquearAudio(){
+      document.removeEventListener("touchend", desbloquearAudio, true);
+      document.removeEventListener("click", desbloquearAudio, true);
+      document.removeEventListener("keydown", desbloquearAudio, true);
+      var r = obtenerReproductor();
+      if(audioActivo) return;
+      try{
+        r.muted = true;
+        r.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+        var p = r.play();
+        var volver = function(){ if(audioActivo) return; try{ r.pause(); }catch(e){} r.muted = false; };
+        if(p && p.then) p.then(volver, volver); else volver();
+      }catch(e){ r.muted = false; }
+    }
+    document.addEventListener("touchend", desbloquearAudio, true);
+    document.addEventListener("click", desbloquearAudio, true);
+    document.addEventListener("keydown", desbloquearAudio, true);
 
     try{
       localStorage.removeItem("jaqueMatematicoMuteTTS");
@@ -1625,6 +1650,7 @@
 
     function iniciarKeepAlive(){
       detenerKeepAlive();
+      if(/iP(hone|ad|od)|Macintosh/.test(navigator.userAgent) && !/Chrome|Edg/.test(navigator.userAgent)) return;
       keepAliveTimer = setInterval(function(){
         if(window.speechSynthesis && window.speechSynthesis.speaking){
           window.speechSynthesis.pause();
@@ -1758,6 +1784,10 @@
       }, 250);
     }
 
+    // Nombre de cada columna tal como se dice en voz alta. Así ninguna voz
+    // (Siri en iPhone, Google, Microsoft) dice «be grande» ni deletrea raro.
+    var NOMBRE_LETRA = {a:"a", b:"be", c:"ce", d:"de", e:"e", f:"efe", g:"ge", h:"hache"};
+    var ES_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     function normalizarPronunciacion(t){
       if(!t) return "";
       return String(t)
@@ -1941,28 +1971,41 @@
       }
       if(audioSrc){
         detenerKeepAlive();
-        if(audioActivo){ try{ audioActivo.pause(); }catch(e){} audioActivo = null; }
-        var aud = new window.Audio(audioSrc);
+        var gen = generacion;
+        var aud = obtenerReproductor();
+        try{ aud.pause(); }catch(e){}
+        aud.muted = false;
+        aud.src = audioSrc;
         audioActivo = aud;
         aud.playbackRate = item.frag ? 1.15 : 1.0;  // los fragmentos encadenados van un poco más ágiles
-        try{ aud.preservesPitch = true; }catch(e){}
-        function finAudio(){
+        try{ aud.preservesPitch = true; aud.webkitPreservesPitch = true; }catch(e){}
+        var cerrado = false, vigia = null;
+        function cerrar(){
+          if(cerrado || gen !== generacion) return false;
+          cerrado = true; clearTimeout(vigia);
+          aud.onended = aud.onerror = aud.onloadedmetadata = null;
           audioActivo = null;
+          return true;
+        }
+        function finAudio(){
+          if(!cerrar()) return;
           hablando = false;
           procesarCola();
         }
-        aud.onended = finAudio;
-        aud.onerror = function(){
-          audioActivo = null;
-          hablarSintetico(item, finAudio);
-        };
-        var prom = aud.play();
-        if(prom && prom.catch){
-          prom.catch(function(){
-            audioActivo = null;
-            hablarSintetico(item, finAudio);
-          });
+        function respaldo(){
+          if(!cerrar()) return;
+          hablarSintetico(item, function(){ if(gen !== generacion) return; hablando = false; procesarCola(); });
         }
+        aud.onended = finAudio;
+        aud.onerror = respaldo;
+        // Vigía: si el navegador nunca avisa que el audio terminó, la cola sigue igual.
+        aud.onloadedmetadata = function(){
+          var dur = isFinite(aud.duration) ? aud.duration / (aud.playbackRate || 1) : 20;
+          clearTimeout(vigia); vigia = setTimeout(finAudio, (dur + 2.5) * 1000);
+        };
+        vigia = setTimeout(finAudio, 30000);
+        var prom = aud.play();
+        if(prom && prom.catch) prom.catch(respaldo);
         return;
       }
 
@@ -1979,6 +2022,8 @@
 
       function hablarCon(v){
         var textoLimpio = normalizarPronunciacion(item.texto);
+        // Solo para la voz del navegador: la columna se dice por su nombre («be», «de», «efe»)
+        if(textoLimpio) textoLimpio = textoLimpio.replace(/\b([a-h])\s?([1-8])\b/g, function(m, col, fila){ return NOMBRE_LETRA[col] + " " + fila; });
         if(!textoLimpio){
           detenerKeepAlive();
           if(alTerminar) alTerminar();
@@ -1998,15 +2043,19 @@
         u.pitch = esJorge ? 1.0 : (esFem ? 0.82 : 0.95);
         u.rate = item.rate ? item.rate : (esJorge ? 1.02 : (esFem ? 0.92 : 0.98));
 
-        var terminado = false;
+        var terminado = false, gen = generacion, vigiaVoz = null;
         function fin(){
           if(terminado) return;
           terminado = true;
+          clearTimeout(vigiaVoz);
+          if(gen !== generacion) return;   // esta voz ya fue detenida
           detenerKeepAlive();
           if(alTerminar) alTerminar();
         }
         u.onend = fin;
         u.onerror = fin;
+        var palabras = textoLimpio.split(/\s+/).length;
+        vigiaVoz = setTimeout(fin, 1800 + palabras * 480 / (u.rate || 1));
 
         try{
           if(window.speechSynthesis.paused) window.speechSynthesis.resume();
@@ -2044,6 +2093,7 @@
     }
 
     function detener(){
+      generacion++;
       cola = [];
       hablando = false;
       detenerKeepAlive();
@@ -4870,7 +4920,7 @@
     var jugada = conTope(pedirJugadaRival(fen).catch(function(err){
       console.warn("El rival Stockfish no respondió; se usa el rival de respaldo.", err);
       return null;
-    }), 16000);
+    }), 10000);
     var espera = (HINTS_ON && session && session.ultimoAnalisis)
       ? conTope(session.ultimoAnalisis.catch(function(){}), 9000) : null;
     var pausa = new Promise(function(r){ setTimeout(r, 500); });
@@ -4879,7 +4929,9 @@
       // El tablero no se adelanta a la voz: la jugada del computador no se
       // ejecuta (ni se redibuja el tablero) hasta que termine de sonar la
       // narración anterior (la jugada del estudiante y, si la hay, la pista).
-      Voz.marcar(function(){
+      var hechoBot = false;
+      var ejecutarBot = function(){
+        if(hechoBot) return; hechoBot = true;
         if(myToken !== botMoveToken) return;
         if(thinking) thinking.style.display = "none";
         if(!G || G.over || SETTINGS.mode!=="bot" || G.state.turn!==SETTINGS.botColor) return;
@@ -4895,7 +4947,9 @@
         }
         if(!mv) return;
         finalizeMove(mv, promo);
-      });
+      };
+      Voz.marcar(ejecutarBot);
+      setTimeout(ejecutarBot, 12000);
     });
   }
 
