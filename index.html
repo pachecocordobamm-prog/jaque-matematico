@@ -490,7 +490,7 @@
     .board-shell{
       width:100vw; max-width:none; box-sizing:border-box;
       margin-left:calc(50% - 50vw); margin-right:0;
-      padding-left:4px; padding-right:4px;
+      padding-left:2px; padding-right:2px;
       border-left:0; border-right:0; border-radius:0;
     }
     /* Solo el tablero usa todo el ancho; lo demás de la tarjeta conserva su margen */
@@ -500,8 +500,8 @@
     .board-frame .coord-txt{font-size:0.8rem;}
     .board-frame .coord-br{font-size:1.15rem;}
     .board-frame > :is(.files, .files-top) span.coord{gap:3px;}
-    .board-frame > .ranks span.coord{padding:0 3px 0 0;}
-    .board-frame > .ranks .coord-br{font-size:0.95rem;}
+    .board-frame > .ranks span.coord{padding:0 2px 0 0;}
+    .board-frame > .ranks .coord-br{font-size:0.85rem; letter-spacing:0;}
   }
   .board{
     display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); grid-template-rows:repeat(8,minmax(0,1fr));
