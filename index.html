@@ -796,7 +796,7 @@
   .rules-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px;}
   .rule-card{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);}
   .rule-card .ricon{font-family:var(--serif); font-size:1.5rem; color:var(--teal-strong); margin-bottom:6px; display:block; font-weight:600;}
-  .rule-card h4{font-family:var(--serif); font-size:1.02rem; margin:0 0 6px 0; color:var(--ink);}
+  .rule-card h3, .rule-card h4{font-family:var(--serif); font-size:1.02rem; margin:0 0 6px 0; color:var(--ink);}
   .rule-card p{font-size:0.87rem; color:var(--ink-soft); margin:0;}
   .rule-card{cursor:pointer; transition:border-color .15s ease, box-shadow .15s ease;}
   .rule-card:hover{border-color:var(--teal);}
@@ -1108,49 +1108,49 @@
     <div class="rules-grid">
       <div class="rule-card" data-rule="check">
         <span class="ricon" role="img" data-alt-audio="alt_check" aria-label="Símbolo de jaque: signos de exclamación que avisan que el rey está atacado.">¡!</span>
-        <h4>Jaque</h4>
+        <h3>Jaque</h3>
         <p>El rey está atacado directamente por una pieza rival. En tu siguiente jugada debes salir del jaque: mover el rey, bloquear el ataque o capturar la pieza que amenaza.</p>
         <button type="button" class="btn rule-card-btn" data-rule-btn="check" aria-pressed="false" aria-label="Cargar ejemplo en el tablero: Jaque">Ver ejemplo en el tablero</button>
       </div>
       <div class="rule-card" data-rule="checkmate">
         <span class="ricon" role="img" data-alt-audio="alt_checkmate" aria-label="Símbolo de jaque mate: un rey con una equis al lado.">♚✕</span>
-        <h4>Jaque mate</h4>
+        <h3>Jaque mate</h3>
         <p>El rey está en jaque y no existe ninguna jugada legal para librarlo. La partida termina de inmediato: gana quien dio el mate.</p>
         <button type="button" class="btn rule-card-btn" data-rule-btn="checkmate" aria-pressed="false" aria-label="Cargar ejemplo en el tablero: Jaque mate">Ver ejemplo en el tablero</button>
       </div>
       <div class="rule-card" data-rule="stalemate">
         <span class="ricon" role="img" data-alt-audio="alt_stalemate" aria-label="Símbolo de tablas: un medio contra un medio, que indica empate.">½–½</span>
-        <h4>Ahogado (tablas)</h4>
+        <h3>Ahogado (tablas)</h3>
         <p>Al jugador en turno no le queda ningún movimiento legal, pero su rey no está en jaque. La partida termina en empate, no en derrota.</p>
         <button type="button" class="btn rule-card-btn" data-rule-btn="stalemate" aria-pressed="false" aria-label="Cargar ejemplo en el tablero: Ahogado (tablas)">Ver ejemplo en el tablero</button>
       </div>
       <div class="rule-card" data-rule="castle">
         <span class="ricon" role="img" data-alt-audio="alt_castle" aria-label="Símbolo de enroque: dos flechas en sentidos contrarios, porque el rey y la torre cruzan sus lugares.">⇄</span>
-        <h4>Enroque</h4>
+        <h3>Enroque</h3>
         <p>Movimiento especial del rey y una torre a la vez: el rey se mueve dos casillas hacia la torre y esta salta al otro lado. Solo es válido si ninguna de las dos piezas se ha movido antes, no hay piezas entre ellas y el rey no está ni pasa por una casilla atacada.</p>
         <button type="button" class="btn rule-card-btn" data-rule-btn="castle" aria-pressed="false" aria-label="Cargar ejemplo en el tablero: Enroque">Ver ejemplo en el tablero</button>
       </div>
       <div class="rule-card" data-rule="enpassant">
         <span class="ricon" role="img" data-alt-audio="alt_enpassant" aria-label="Símbolo de captura al paso: una flecha hacia abajo y una equis de captura.">⇣×</span>
-        <h4>Captura al paso</h4>
+        <h3>Captura al paso</h3>
         <p>Cuando un peón avanza dos casillas desde su posición inicial y se sitúa junto a un peón rival, este último puede capturarlo como si solo hubiese avanzado una casilla, aplicable de forma exclusiva en la jugada inmediatamente posterior.</p>
         <button type="button" class="btn rule-card-btn" data-rule-btn="enpassant" aria-pressed="false" aria-label="Cargar ejemplo en el tablero: Captura al paso">Ver ejemplo en el tablero</button>
       </div>
       <div class="rule-card" data-rule="promotion">
         <span class="ricon" role="img" data-alt-audio="alt_promotion" aria-label="Símbolo de coronación: un peón, una flecha y una dama, porque el peón se convierte en dama.">♙→♕</span>
-        <h4>Coronación</h4>
+        <h3>Coronación</h3>
         <p>Cuando un peón llega a la última fila, se transforma en la pieza que el jugador elija: dama, torre, alfil o caballo. Casi siempre se elige dama, por ser la pieza más poderosa.</p>
         <button type="button" class="btn rule-card-btn" data-rule-btn="promotion" aria-pressed="false" aria-label="Cargar ejemplo en el tablero: Coronación">Ver ejemplo en el tablero</button>
       </div>
       <div class="rule-card" data-rule="fifty">
         <span class="ricon" role="img" data-alt-audio="alt_fifty" aria-label="Símbolo de la regla de las 50 jugadas: el número 50.">50</span>
-        <h4>Regla de las 50 jugadas</h4>
+        <h3>Regla de las 50 jugadas</h3>
         <p>Si pasan 50 jugadas seguidas de cada bando sin mover un peón ni capturar ninguna pieza, cualquier jugador puede reclamar tablas.</p>
         <button type="button" class="btn rule-card-btn" data-rule-btn="fifty" aria-pressed="false" aria-label="Cargar ejemplo en el tablero: Regla de las 50 jugadas">Ver ejemplo en el tablero</button>
       </div>
       <div class="rule-card" data-rule="repetition">
         <span class="ricon" role="img" data-alt-audio="alt_repetition" aria-label="Símbolo de triple repetición: una flecha en círculo con un 3 pequeño.">↻³</span>
-        <h4>Triple repetición</h4>
+        <h3>Triple repetición</h3>
         <p>Si la misma posición exacta se repite tres veces durante la partida, con el mismo jugador en turno, la partida puede terminar en tablas.</p>
         <button type="button" class="btn rule-card-btn" data-rule-btn="repetition" aria-pressed="false" aria-label="Cargar ejemplo en el tablero: Triple repetición">Ver ejemplo en el tablero</button>
       </div>
