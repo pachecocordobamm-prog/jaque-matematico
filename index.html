@@ -898,7 +898,8 @@
   /* Objetivos táctiles de al menos 44 x 44 px en teléfonos (TalkBack y VoiceOver activan con doble toque en el centro del elemento) */
   @media (pointer:coarse), (max-width:760px){
     .btn, .a11y-btn, #modeToggle button, #timeToggle button, #quizCycleToggle button, #quizPhaseToggle button,
-    #navDropdown a, .skip-link{ min-height:44px; }
+    #navDropdown a, .skip-link, .a11y-select, .a11y-statement a{ min-height:44px; }
+    .a11y-statement a{ display:inline-flex; align-items:center; }
     .a11y-btn{ min-width:44px; }
   }
 
@@ -1171,7 +1172,7 @@
           <div class="board-frame">
             <div class="files-top" id="ruleFilesTop" aria-hidden="true"></div>
             <div class="ranks" id="ruleRanksCol" aria-hidden="true"></div>
-            <a class="skip-board-link" href="#ruleControlPanel">⏭ Saltar las 64 casillas de este tablero</a><div class="board" id="ruleBoard" role="group" aria-label="Tablero de ejemplo, 8 por 8 casillas"></div>
+            <a class="skip-board-link" href="#ruleControlPanel">⏭ Saltar las 64 casillas del tablero de las reglas</a><div class="board" id="ruleBoard" role="group" aria-label="Tablero de ejemplo, 8 por 8 casillas"></div>
             <div class="ranks-right" id="ruleRanksRight" aria-hidden="true"></div>
             <div class="files" id="ruleFilesRow" aria-hidden="true"></div>
           </div>
@@ -1312,7 +1313,7 @@
         <div class="board-frame">
           <div class="files-top" id="cartFilesTop" aria-hidden="true"></div>
           <div class="ranks" id="cartRanksCol" aria-hidden="true"></div>
-          <a class="skip-board-link" href="#cartControlPanel">⏭ Saltar las 64 casillas de este tablero</a><div class="cart-board-wrap">
+          <a class="skip-board-link" href="#cartControlPanel">⏭ Saltar las 64 casillas del plano cartesiano</a><div class="cart-board-wrap">
             <div class="board" id="cartBoard" role="group" aria-label="Tablero de plano cartesiano, 8 por 8 casillas"></div>
             <svg class="cart-svg" id="cartSvg" viewBox="0 0 8 8" preserveAspectRatio="none" role="img" data-alt-audio="alt_cart" aria-label="Plano cartesiano sobre el tablero de 8 por 8: una flecha, el vector de desplazamiento, va de la casilla de origen a la casilla de destino de la última jugada.">
               <defs>
@@ -1374,7 +1375,7 @@
         <div class="board-frame">
           <div class="files-top" id="practiceFilesTop" aria-hidden="true"></div>
           <div class="ranks" id="ranksCol" aria-hidden="true"></div>
-          <a class="skip-board-link" href="#practiceControlPanel">⏭ Saltar las 64 casillas de este tablero</a><div class="board" id="practiceBoard" role="group" aria-label="Tablero de práctica, 8 por 8 casillas"></div>
+          <a class="skip-board-link" href="#practiceControlPanel">⏭ Saltar las 64 casillas del tablero de práctica</a><div class="board" id="practiceBoard" role="group" aria-label="Tablero de práctica, 8 por 8 casillas"></div>
           <div class="ranks-right" id="practiceRanksRight" aria-hidden="true"></div>
           <div class="files" id="filesRow" aria-hidden="true"></div>
         </div>
@@ -1476,7 +1477,7 @@
         <div class="board-frame">
           <div class="files-top" id="gameFilesTop" aria-hidden="true"></div>
           <div class="ranks" id="gameRanksCol" aria-hidden="true"></div>
-          <a class="skip-board-link" href="#gameControlPanel">⏭ Saltar las 64 casillas (ir a escribir jugada o controles)</a><div class="board" id="gameBoard" role="group" aria-label="Tablero de ajedrez, 8 por 8 casillas"></div>
+          <a class="skip-board-link" href="#gameControlPanel">⏭ Saltar las 64 casillas de la partida (ir a escribir la jugada o a los controles)</a><div class="board" id="gameBoard" role="group" aria-label="Tablero de ajedrez, 8 por 8 casillas"></div>
           <div class="ranks-right" id="gameRanksRight" aria-hidden="true"></div>
           <div class="files" id="gameFilesRow" aria-hidden="true"></div>
         </div>
