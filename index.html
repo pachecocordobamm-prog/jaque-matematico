@@ -341,6 +341,12 @@
     max-width:1080px;margin:0 auto;padding:64px 24px 56px;
     display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;
   }
+  /* En el teléfono el tablero de la portada va debajo del título, a buen tamaño
+     (antes quedaba de 36 px al lado del título: ni se veía ni se podía tocar). */
+  @media (max-width:760px){
+    .hero-inner{ grid-template-columns:minmax(0,1fr); gap:28px; padding:40px 20px 40px; }
+    .hero-inner .hero-board{ width:min(100%, 340px); justify-self:center; }
+  }
   .hero h1{
     font-size:clamp(2.4rem,5.4vw,3.6rem);
     line-height:1.05;
@@ -1579,9 +1585,9 @@
         <input type="text" id="studentGroupInput" placeholder="ej. 902, 903, 1105" maxlength="10" autocomplete="off" spellcheck="false">
         <label for="studentStageSelect" class="eyebrow">Momento de seguimiento</label>
         <select id="studentStageSelect" style="font-family:var(--mono); font-size:0.9rem; padding:9px 12px; border-radius:8px; border:1px solid var(--line); background:var(--paper); color:var(--ink);">
-          <option value="Partida Inicial (Semanas 9-10)">Partida Inicial (Línea base · Semanas 9–10)</option>
+          <option value="Partida Inicial (Semanas 9-10)">Partida Inicial (línea base, semanas 9 a 10)</option>
           <option value="Partida de Práctica">Partida de Práctica Formativa</option>
-          <option value="Partida Final (Semana 13)">Partida Final (Cierre · Semana 13)</option>
+          <option value="Partida Final (Semana 13)">Partida Final (cierre, semana 13)</option>
         </select>
       </div>
       <p class="voice-disclaimer" id="studentGateError" role="alert"></p>
@@ -5651,7 +5657,15 @@
   function submitMoveInput(){
     var input = document.getElementById("moveInput");
     if(!input) return;
-    var tokens = input.value.trim().toLowerCase().split(/\s+/).filter(function(s){ return s.length; });
+    // En el teléfono se escribe rápido o se dicta por voz: se aceptan «e2e4»,
+    // «e2-e4», «de e2 a e4», «E2 E4», «e dos e cuatro» y «de 2 de 4» (d2 d4).
+    var texto = input.value.trim().toLowerCase()
+      .replace(/\b(uno|dos|tres|cuatro|cinco|seis|siete|ocho)\b/g, function(m){ return {uno:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8}[m]; })
+      .replace(/\b(be|ce|de|efe|ge|hache)\s*([1-8])\b/g, function(m, l, n){ return {be:"b",ce:"c",de:"d",efe:"f",ge:"g",hache:"h"}[l] + n; });
+    var casillas = (texto.match(/[a-h]\s?[1-8]/g) || []).map(function(c){ return c.replace(/\s/g, ""); });
+    var palabras = texto.split(/[\s,.-]+/).filter(function(s){ return s.length; });
+    var promoPalabra = palabras.filter(function(p){ return PROMO_TEXT_MAP[p]; })[0];
+    var tokens = casillas.length >= 2 ? [casillas[0], casillas[1], promoPalabra] : palabras;
     if(!G || G.over){ gameVozDecir("La partida ya terminó.", {interrumpir:true}); return; }
     if(G.pendingPromotion){ gameVozDecir("Primero elige a qué pieza corona el peón.", {interrumpir:true}); return; }
     if(SETTINGS.mode==="bot" && G.state.turn===SETTINGS.botColor){ gameVozDecir("Espera: le toca mover al computador.", {interrumpir:true}); return; }
@@ -5938,12 +5952,13 @@
       grado, Δx delta equis… En pantalla no cambia nada. */
 (function(){
   var ORD = {"6":"sexto","7":"séptimo","8":"octavo","9":"noveno","10":"décimo","11":"undécimo"};
-  var DETECTA = /[Δℤ∈→↦∑°×–−±²³√≈≤≥·\/]|Ciclo I|\d\.\.\d/;
+  var DETECTA = /[=+½Δℤ∈→↦∑°×–−±²³√≈≤≥·\/]|Ciclo I|\d\.\.\d/;
   function decirSimbolos(t){
     t = String(t);
     t = t.replace(/Δ\s?x/g, " delta equis ").replace(/Δ\s?y/g, " delta ye ")
          .replace(/ℤ²/g, " los pares de números enteros ").replace(/∈/g, " pertenece a ")
          .replace(/↦/g, " se transforma en ").replace(/→/g, " corresponde a ").replace(/∑/g, " la suma de ");
+    t = t.replace(/½\s?[–-]\s?½/g, " medio punto para cada uno ").replace(/½/g, " medio ");
     t = t.replace(/(\d{1,2})°(?:\s*[–-]\s*|\s+(?:y|a)\s+)(\d{1,2})°/g, function(m, a, b){
       return (ORD[a] && ORD[b]) ? (ORD[a] + " grado y " + ORD[b] + " grado") : (a + " grados a " + b + " grados");
     });
@@ -5953,12 +5968,13 @@
          .replace(/signo ×/g, "signo equis").replace(/\s?×\s?/g, " por ");
     t = t.replace(/(\d)\.\.(\d)/g, "$1 al $2");
     t = t.replace(/\b([a-h])–([a-h])\b/g, "$1 hasta $2").replace(/(\d+)\s?–\s?(\d+)/g, "$1 a $2").replace(/\s*–\s*/g, ", ");
-    t = t.replace(/(Ajedrez|Matemáticas|Pregunta) (\d+)\/(\d+)/g, "$1 $2 de $3").replace(/\s?\/\s?/g, " dividido entre ");
+    t = t.replace(/(Ajedrez|Matemáticas|Pregunta) (\d+)\/(\d+)/g, "$1 $2 de $3").replace(/(\d+)\s?\/\s?(\d+)/g, "$1 de $2").replace(/\s?\/\s?/g, " dividido entre ");
     t = t.replace(/−/g, " menos ").replace(/±/g, " más o menos ")
          .replace(/²/g, " al cuadrado").replace(/³/g, " al cubo").replace(/√/g, " raíz de ")
          .replace(/≈/g, " aproximadamente ").replace(/≤/g, " menor o igual a ").replace(/≥/g, " mayor o igual a ");
     t = t.replace(/(\d)\s?·\s?(\d)/g, "$1 por $2").replace(/\s*·\s*/g, ", ");
     t = t.replace(/Δ/g, " delta ");
+    t = t.replace(/(\d)\s?min\b/g, "$1 minutos").replace(/\s?=\s?/g, " igual a ").replace(/\s?\+\s?/g, " más ");
     return t.replace(/\s{2,}/g, " ").replace(/([(\[{¿¡])\s+/g, "$1").replace(/\s+([,.:;)\]}?!])/g, "$1");
   }
   window.decirSimbolos = decirSimbolos;
