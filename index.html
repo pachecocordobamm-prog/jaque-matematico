@@ -1167,9 +1167,9 @@
       <div class="rule-stage-head">
         <span class="mate-tag" id="ruleStageTag">Ejemplo</span>
         <div class="rule-stage-nav" id="ruleStageNav" style="display:none;">
-          <button class="btn" id="rulePrevBtn" type="button">‹ anterior</button>
+          <button class="btn" id="rulePrevBtn" type="button" aria-label="Ejemplo anterior"><span aria-hidden="true">‹</span> anterior</button>
           <span id="ruleExampleCounter">1 / 1</span>
-          <button class="btn" id="ruleNextBtn" type="button">siguiente ›</button>
+          <button class="btn" id="ruleNextBtn" type="button" aria-label="Siguiente ejemplo">siguiente <span aria-hidden="true">›</span></button>
         </div>
       </div>
 
@@ -5946,7 +5946,7 @@
       grado, Δx delta equis… En pantalla no cambia nada. */
 (function(){
   var ORD = {"6":"sexto","7":"séptimo","8":"octavo","9":"noveno","10":"décimo","11":"undécimo"};
-  var DETECTA = /[=+½Δℤ∈→↦∑°×–−±²³√≈≤≥·\/]|Ciclo I|\d\.\.\d|\bvs\b/;
+  var DETECTA = /[|=+½Δℤ∈→↦∑°×–−±²³√≈≤≥·\/]|Ciclo I|\d\.\.\d|\bvs\b/;
   function decirSimbolos(t){
     t = String(t);
     t = t.replace(/Δ\s?x/g, " delta equis ").replace(/Δ\s?y/g, " delta ye ")
@@ -5969,6 +5969,7 @@
          .replace(/≈/g, " aproximadamente ").replace(/≤/g, " menor o igual a ").replace(/≥/g, " mayor o igual a ");
     t = t.replace(/(\d)\s?·\s?(\d)/g, "$1 por $2").replace(/\s*·\s*/g, ", ");
     t = t.replace(/Δ/g, " delta ");
+    t = t.replace(/\|([^|\n]{1,30})\|/g, " valor absoluto de $1 ");
     t = t.replace(/\bvs\.?(?=\s)/g, "frente a");
     t = t.replace(/(\d)\s?min\b/g, "$1 minutos").replace(/\s?=\s?/g, " igual a ").replace(/\s?\+\s?/g, " más ");
     return t.replace(/\s{2,}/g, " ").replace(/([(\[{¿¡])\s+/g, "$1").replace(/\s+([,.:;)\]}?!])/g, "$1");
